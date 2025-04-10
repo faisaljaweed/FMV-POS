@@ -1,98 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  location: string;
-  type: string;
-  price: number;
-  vendorId: string;
-  standingCapacity: number;
-  seatedCapacity: number;
-  size: number;
-  features: {
-    swimmingPool: boolean;
-    parking: boolean;
-    wifi: boolean;
-    secuirty: boolean;
-    kitchen: boolean;
-    bbqArea: boolean;
-    airCondition: boolean;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  deleteProductThunk,
+  getProductThunk,
+  selectProductList,
+} from "../../store/productSlice";
+import { toast } from "react-toastify";
+import CustomButton from "../../Components/Button";
+// interface Product {
+//   _id: string;
+//   name: string;
+//   description: string;
+//   location: string;
+//   type: string;
+//   price: number;
+//   vendorId: string;
+//   standingCapacity: number;
+//   seatedCapacity: number;
+//   size: number;
+//   features: {
+//     swimmingPool: boolean;
+//     parking: boolean;
+//     wifi: boolean;
+//     secuirty: boolean;
+//     kitchen: boolean;
+//     bbqArea: boolean;
+//     airCondition: boolean;
+//   };
+//   createdAt: string;
+//   updatedAt: string;
+// }
 
 const Get_Product = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState<string>("");
-  // useEffect(() => {
-  //   const getBooking = async () => {
-  //     const token = localStorage.getItem("accessToken");
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:3000/api/v1/booking/get-booking-only-admin`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setBookings(response.data.data); // Assuming the response has a `data` field
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error(error);
-  //       // setError("Failed to fetch bookings");
-  //       setLoading(false);
-  //     }
-  //   };
-  //   getBooking();
-  // }, []);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProductList);
+  useEffect(() => {
+    dispatch(getProductThunk());
+  }, []);
 
-  // const handleDelete = (id: string) => {
-  //   const token = localStorage.getItem("accessToken");
-  //   axios
-  //     .delete(`http://localhost:3000/api/v1/booking/delete-booking/${id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setBookings(bookings.filter((booking) => booking._id !== id));
-  //       console.log(res);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  //     </div>
-  //   );
-  // }
+  const handleDelete = (id: string) => {
+    try {
+      dispatch(deleteProductThunk(id)).unwrap();
+      toast.success("Product Deleted Successfully");
+    } catch (error) {
+      toast.error("Failed to delete product");
+    }
+  };
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  //     </div>
-  //   );
-  // }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-xl">{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -165,6 +124,12 @@ const Get_Product = () => {
                   ))}
                 </ul>
               </div>
+              <CustomButton
+                type="submit"
+                onClick={() => handleDelete(product._id)}
+              >
+                Delete
+              </CustomButton>
             </div>
           ))}
         </div>

@@ -13,9 +13,14 @@ export const CreateProduct = async () => {
 export const GetAllProduct = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/v1/product/get-all-product`
+      `http://localhost:3000/api/v1/product/get-all-product`,
+      {
+        headers: {
+          Authorization: `Beare ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error in GetAllProduct API: ", error);
   }
@@ -46,7 +51,12 @@ export const EditProduct = async (id: any) => {
 export const DeleteProduct = async (id: any) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/v1/product/delete-product/${id}`
+      `http://localhost:3000/api/v1/product/delete-product/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     return response;
   } catch (error) {

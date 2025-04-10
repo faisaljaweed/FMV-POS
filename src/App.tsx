@@ -4,9 +4,14 @@ import { router } from "./router/router";
 import Loader from "./Components/Loader";
 import { useAppSelector } from "./store/hooks";
 import { selectApiCallInProgress } from "./store/userSlice";
+import { selectProductApiCallInProgress } from "./store/productSlice";
 
 function App() {
-  const isLoading = useAppSelector(selectApiCallInProgress);
+  const userLoading = useAppSelector(selectApiCallInProgress);
+  const productLoading = useAppSelector(selectProductApiCallInProgress);
+
+  const isLoading = userLoading || productLoading;
+
   return (
     <>
       {isLoading && (

@@ -43,6 +43,15 @@ export const loginUserThunk = createAsyncThunk(
   ) => {
     try {
       const loginUser = await LoginUser(credentials);
+      // Access Token
+      const accessToken = loginUser.data.accessToken;
+      localStorage.setItem("accessToken", accessToken);
+      // Role
+      const role = loginUser.data.loggedInUser.role;
+      localStorage.setItem("role", role);
+      // UserName
+      const username = loginUser.data.loggedInUser.username;
+      localStorage.setItem("userName", username);
       return loginUser;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -60,6 +69,9 @@ export const registerUserThunk = createAsyncThunk(
 
 export const logoutUserThunk = createAsyncThunk("user/logoutUser", async () => {
   const logoutUser = await Logout();
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("role");
+  localStorage.removeItem("usename");
   return logoutUser;
 });
 const userSlice = createSlice({
@@ -72,6 +84,7 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Get All User Only Admin
       .addCase(getUserThunk.pending, (state) => {
         state.apiCallInProgress = true;
       })
@@ -82,6 +95,7 @@ const userSlice = createSlice({
       .addCase(getUserThunk.rejected, (state) => {
         state.apiCallInProgress = false;
       })
+      // Register User (Vendor)
       .addCase(registerUserThunk.pending, (state) => {
         state.apiCallInProgress = true;
       })
@@ -92,17 +106,28 @@ const userSlice = createSlice({
       .addCase(registerUserThunk.rejected, (state) => {
         state.apiCallInProgress = false;
       })
+      // Login (Vendor and admin)
       .addCase(loginUserThunk.pending, (state) => {
         state.apiCallInProgress = true;
-        // state.error = null;
       })
       .addCase(loginUserThunk.fulfilled, (state, action) => {
         state.apiCallInProgress = false;
-        state.userInfo = action.payload; // Assuming your API returns data in this structure
+        state.userInfo = action.payload.data; // Assuming your API returns data in this structure
       })
       .addCase(loginUserThunk.rejected, (state) => {
         state.apiCallInProgress = false;
-        // state.error = action.payload as string;
+      })
+      // Logout (Admin and Vendor)
+      .addCase(logoutUserThunk.pending, (state) => {
+        state.apiCallInProgress = true;
+      })
+      .addCase(logoutUserThunk.fulfilled, (state) => {
+        state.userInfo = null;
+        state.apiCallInProgress = false;
+        state.items = [];
+      })
+      .addCase(logoutUserThunk.rejected, (state) => {
+        state.apiCallInProgress = false;
       });
   },
 });

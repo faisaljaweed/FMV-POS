@@ -5,30 +5,30 @@ import LoginIcon from "@mui/icons-material/Login";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "./store/hooks";
 import { loginUserThunk } from "./store/userSlice";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
-    if (e) e.preventDefault(); // Prevents form from reloading
-    console.log("Email:", email);
-    console.log("Password:", password);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevents form from reloading
+    setEmail("");
+    setPassword("");
     try {
-      // setLoading(true);
       await dispatch(loginUserThunk({ email, password })).unwrap();
+      const role = localStorage.getItem("role");
+      if (role == "admin") {
+        navigate("/admin_dashboard");
+      } else if (role == "vendor") {
+        navigate("/vendor-dashboard");
+      }
       toast.success("Login successful!");
       // Redirect or perform other actions after successful login
     } catch (error: any) {
       toast.error(error.message || "Login failed");
     }
-    // finally {
-    //   setLoading(false);
-    // }
-    // setEmail("");
-    // setPassword("");
-    // toast.success("Login successful!"); // Display success message
-    // dispatch(loginUserThunk());
   };
 
   return (
@@ -63,7 +63,6 @@ const Login = () => {
             type="submit"
             startIcon={<LoginIcon />}
             className="w-full"
-            // disabled={loading}
           >
             {/* {loading ? "LOGGING IN..." : "LOGIN"} */}
             Login

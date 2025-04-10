@@ -56,14 +56,14 @@ const Signup = () => {
         <div className="mb-4">
           <label htmlFor="username" className="block font-medium">
             USERNAME
-            <Input
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Enter your UserName"
-              required
-            />
           </label>
+          <Input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter your UserName"
+            required
+          />
         </div>
 
         <div className="mb-4">

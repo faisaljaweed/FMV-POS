@@ -8,6 +8,9 @@ export const LoginUser = async (credentials: {
     const response = await axios.post(
       `http://localhost:3000/api/v1/user/login`,
       credentials
+      // {
+      //   withCredentials: true,
+      // }
     );
     return response.data;
   } catch (error) {
@@ -57,7 +60,12 @@ export const GetUser = async () => {
 export const DeleteUser = async (id: string) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/v1/user/delete-user/${id}`
+      `http://localhost:3000/api/v1/user/delete-user/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
