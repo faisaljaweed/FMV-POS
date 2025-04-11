@@ -1,11 +1,13 @@
 import axios from "axios";
+import { ProductTypes } from "../Types/types";
 
-export const CreateProduct = async () => {
+export const CreateProduct = async (product: Partial<ProductTypes>) => {
   try {
     const response = await axios.post(
-      `http://localhost:3000/api/v1/product/create-product`
+      `http://localhost:3000/api/v1/product/create-product`,
+      product
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error in CreateProduct API: ", error);
   }

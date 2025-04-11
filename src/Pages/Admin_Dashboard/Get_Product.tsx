@@ -1,5 +1,102 @@
+// import { useState, useEffect } from "react";
+// import SearchIcon from "@mui/icons-material/Search";
+// import { useAppDispatch, useAppSelector } from "../../store/hooks";
+// import {
+//   deleteProductThunk,
+//   getProductThunk,
+//   selectProductList,
+// } from "../../store/productSlice";
+// import { toast } from "react-toastify";
+// import CustomButton from "../../Components/Button";
+
+// const Get_Product = () => {
+//   const [search, setSearch] = useState<string>("");
+//   const dispatch = useAppDispatch();
+//   const products = useAppSelector(selectProductList);
+//   useEffect(() => {
+//     dispatch(getProductThunk());
+//   }, []);
+
+//   const handleDelete = (id: string) => {
+//     try {
+//       dispatch(deleteProductThunk(id)).unwrap();
+//       toast.success("Product Deleted Successfully");
+//     } catch (error) {
+//       toast.error("Failed to delete product");
+//     }
+//   };
+
+//   const filteredProducts = products.filter((product) =>
+//     product.name.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 py-8">
+//       <div className="max-w-7xl mx-auto px-4">
+//         <h1 className="text-3xl font-bold text-center mb-6">
+//           Get All Products
+//         </h1>
+
+//         <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
+//           <SearchIcon className="text-gray-400 mr-2" />
+//           <input
+//             type="text"
+//             placeholder="Search products..."
+//             value={search}
+//             onChange={(e) => setSearch(e.target.value)}
+//             className="w-full p-2 outline-none"
+//           />
+//         </div>
+
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//           {filteredProducts.map((product) => (
+//             <div
+//               key={product._id}
+//               className="bg-white p-4 shadow-md rounded-lg"
+//             >
+//               <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
+//               <p className="text-gray-600">{product.description}</p>
+//               <p className="mt-2 text-sm text-gray-500">
+//                 Location: {product.location}
+//               </p>
+//               <p className="text-sm">Price: Rs. {product.price}</p>
+//               <p className="text-sm">
+//                 Capacity: {product.standingCapacity} standing /{" "}
+//                 {product.seatedCapacity} seated
+//               </p>
+//               <p className="text-sm">Size: {product.size} sq ft</p>
+//               <div className="mt-2 text-sm">
+//                 Features:
+//                 <ul className="list-disc ml-5">
+//                   {Object.entries(product.features).map(([key, value]) => (
+//                     <li
+//                       key={key}
+//                       className={value ? "text-green-600" : "text-red-500"}
+//                     >
+//                       {key}: {value ? "Yes" : "No"}
+//                     </li>
+//                   ))}
+//                 </ul>
+//               </div>
+//               <CustomButton
+//                 type="submit"
+//                 onClick={() => handleDelete(product._id)}
+//               >
+//                 Delete
+//               </CustomButton>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Get_Product;
+
 import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   deleteProductThunk,
@@ -8,34 +105,12 @@ import {
 } from "../../store/productSlice";
 import { toast } from "react-toastify";
 import CustomButton from "../../Components/Button";
-// interface Product {
-//   _id: string;
-//   name: string;
-//   description: string;
-//   location: string;
-//   type: string;
-//   price: number;
-//   vendorId: string;
-//   standingCapacity: number;
-//   seatedCapacity: number;
-//   size: number;
-//   features: {
-//     swimmingPool: boolean;
-//     parking: boolean;
-//     wifi: boolean;
-//     secuirty: boolean;
-//     kitchen: boolean;
-//     bbqArea: boolean;
-//     airCondition: boolean;
-//   };
-//   createdAt: string;
-//   updatedAt: string;
-// }
 
 const Get_Product = () => {
   const [search, setSearch] = useState<string>("");
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProductList);
+
   useEffect(() => {
     dispatch(getProductThunk());
   }, []);
@@ -54,85 +129,116 @@ const Get_Product = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Get All Products
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+            Venue Catalog
+          </h1>
+          <p className="text-lg text-gray-600">
+            Browse and manage all available venues
+          </p>
+        </div>
 
-        <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-          <SearchIcon className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 outline-none"
-          />
-        </div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Capacity
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Size
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Feature
-              </th>
-            </tr>
-          </thead>
-        </table>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product._id}
-              className="bg-white p-4 shadow-md rounded-lg"
-            >
-              <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-              <p className="text-gray-600">{product.description}</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Location: {product.location}
-              </p>
-              <p className="text-sm">Price: Rs. {product.price}</p>
-              <p className="text-sm">
-                Capacity: {product.standingCapacity} standing /{" "}
-                {product.seatedCapacity} seated
-              </p>
-              <p className="text-sm">Size: {product.size} sq ft</p>
-              <div className="mt-2 text-sm">
-                Features:
-                <ul className="list-disc ml-5">
-                  {Object.entries(product.features).map(([key, value]) => (
-                    <li
-                      key={key}
-                      className={value ? "text-green-600" : "text-red-500"}
-                    >
-                      {key}: {value ? "Yes" : "No"}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <CustomButton
-                type="submit"
-                onClick={() => handleDelete(product._id)}
-              >
-                Delete
-              </CustomButton>
+        {/* Search Bar */}
+        <div className="mb-8 max-w-md mx-auto">
+          <div className="relative flex items-center">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <SearchIcon className="text-gray-400" />
             </div>
-          ))}
+            <input
+              type="text"
+              placeholder="Search venues by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
         </div>
+
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-500">
+              No venues found matching your search
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProducts.map((product) => (
+              <div
+                key={product._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="p-6">
+                  <div className="flex justify-between items-start">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      {product.name}
+                    </h2>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                      {product.size} sq ft
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 mb-4">{product.description}</p>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Location:
+                      </span>
+                      <span className="text-gray-600">{product.location}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Price:
+                      </span>
+                      <span className="text-gray-600">Rs. {product.price}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Capacity:
+                      </span>
+                      <span className="text-gray-600">
+                        {product.standingCapacity} standing /{" "}
+                        {product.seatedCapacity} seated
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-gray-800 mb-2">
+                      Features:
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(product.features).map(([key, value]) => (
+                        <div key={key} className="flex items-center">
+                          <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                              value ? "bg-green-500" : "bg-red-500"
+                            }`}
+                          ></span>
+                          <span className="text-sm text-gray-700">{key}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <CustomButton
+                      type="button"
+                      onClick={() => handleDelete(product._id)}
+                      className="flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+                    >
+                      <DeleteIcon className="mr-1" fontSize="small" />
+                      Delete
+                    </CustomButton>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

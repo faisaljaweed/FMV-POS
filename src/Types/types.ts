@@ -9,18 +9,17 @@ export type UserTypes = {
   updatedAt: string;
 };
 
-
-export type ProductTypes={
+export type ProductTypes = {
   _id: string;
   name: string;
   description: string;
   location: string;
   type: string;
-  price: number;
+  price: string;
   vendorId: string;
-  standingCapacity: number;
-  seatedCapacity: number;
-  size: number;
+  standingCapacity: string;
+  seatedCapacity: string;
+  size: string;
   features: {
     swimmingPool: boolean;
     parking: boolean;
@@ -29,7 +28,7 @@ export type ProductTypes={
     kitchen: boolean;
     bbqArea: boolean;
     airCondition: boolean;
-  }
+  };
   createdAt: string;
   updatedAt: string;
-}
+};

@@ -28,8 +28,8 @@ export const getProductThunk = createAsyncThunk(
 );
 export const addProductThunk = createAsyncThunk(
   "product/add-product",
-  async () => {
-    const createProduct = await CreateProduct();
+  async (product: Partial<ProductTypes>) => {
+    const createProduct = await CreateProduct(product);
     return createProduct;
   }
 );
@@ -68,6 +68,16 @@ const productSlice = createSlice({
         state.apiCallInProgress = false;
       })
       .addCase(getProductThunk.rejected, (state) => {
+        state.apiCallInProgress = false;
+      })
+      .addCase(addProductThunk.pending, (state) => {
+        state.apiCallInProgress = true;
+      })
+      .addCase(addProductThunk.fulfilled, (state, action) => {
+        state.apiCallInProgress = false;
+        state.items.unshift(action.payload);
+      })
+      .addCase(addProductThunk.rejected, (state) => {
         state.apiCallInProgress = false;
       });
   },

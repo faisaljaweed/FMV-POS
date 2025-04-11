@@ -2,6 +2,8 @@ import { useState } from "react";
 import Input from "../../Components/Input";
 import { toast } from "react-toastify";
 import CustomButton from "../../Components/Button";
+import { useAppDispatch } from "../../store/hooks";
+import { addProductThunk } from "../../store/productSlice";
 const Add_Product = () => {
   const [pics, setPics] = useState<File[]>([]); // Changed to an array of files
   const [features, setFeatures] = useState({
@@ -14,6 +16,7 @@ const Add_Product = () => {
     airConditioning: false,
   });
   const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
   const handleFeatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFeatures((prev) => ({
@@ -21,6 +24,7 @@ const Add_Product = () => {
       [name]: checked,
     }));
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -32,7 +36,7 @@ const Add_Product = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFeatures({
       swimmingPool: false,
@@ -74,9 +78,13 @@ const Add_Product = () => {
         !features
       ) {
         toast.error("All fields are required.");
+        return;
       }
-    } else {
-      console.log("At least one product picture is required");
+    }
+    try {
+      await dispatch(addProductThunk({}));
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
     }
   };
   // Remove an image from the selected files
