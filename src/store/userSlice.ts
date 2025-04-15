@@ -52,6 +52,9 @@ export const loginUserThunk = createAsyncThunk(
       // UserName
       const username = loginUser.data.loggedInUser.username;
       localStorage.setItem("userName", username);
+      // User
+      const user = loginUser.data.loggedInUser;
+      localStorage.setItem("user", JSON.stringify(user));
       return loginUser;
     } catch (error: any) {
       return rejectWithValue(error.message);

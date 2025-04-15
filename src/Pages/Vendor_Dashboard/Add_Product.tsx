@@ -25,6 +25,10 @@ const Add_Product = () => {
     }));
   };
 
+  const selectedFeatures = Object.entries(features)
+    .filter(([_, value]) => value)
+    .map(([key]) => key);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -36,8 +40,74 @@ const Add_Product = () => {
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setFeatures({
+  //     swimmingPool: false,
+  //     parking: false,
+  //     wifi: false,
+  //     security: false,
+  //     kitchen: false,
+  //     bbqArea: false,
+  //     airConditioning: false,
+  //   });
+  //   if (pics.length > 0) {
+  //     const target = e.target as HTMLFormElement;
+  //     const formData = new FormData(target);
+  //     // Create FormData object
+  //     const VenuName = formData.get("name")?.toString().trim() || "";
+  //     const description = formData.get("description")?.toString().trim() || "";
+  //     const location = formData.get("location")?.toString().trim() || "";
+  //     const price = formData.get("price")?.toString().trim() || "";
+  //     const type = formData.get("type")?.toString().trim() || "";
+  //     const standingCapacity =
+  //       formData.get("standingCapacity")?.toString().trim() || "";
+  //     const seatedCapacity =
+  //       formData.get("seatedCapacity")?.toString().trim() || "";
+  //     const size = formData.get("size")?.toString().trim() || "";
+  //     const features = formData.get("features")?.toString().trim() || "";
+  //     pics.forEach((file) => {
+  //       formData.append("pics", file);
+  //     });
+
+  //     if (
+  //       !VenuName ||
+  //       !description ||
+  //       !location ||
+  //       !price ||
+  //       !type ||
+  //       !standingCapacity ||
+  //       !seatedCapacity ||
+  //       !size ||
+  //       !features
+  //     ) {
+  //       toast.error("All fields are required.");
+  //       return;
+  //     }
+  //   }
+  //   try {
+  //     await dispatch(
+  //       addProductThunk({
+  //         VenuName,
+  //         description,
+  //         location,
+  //         price,
+  //         type,
+  //         seatedCapacity,
+  //         standingCapacity,
+  //         size,
+  //         features: selectedFeatures,
+  //       })
+  //     );
+  //   } catch (error: any) {
+  //     toast.error(error.message || "Something went wrong");
+  //   }
+  // };
+  // Remove an image from the selected files
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Reset features
     setFeatures({
       swimmingPool: false,
       parking: false,
@@ -47,11 +117,13 @@ const Add_Product = () => {
       bbqArea: false,
       airConditioning: false,
     });
+
     if (pics.length > 0) {
       const target = e.target as HTMLFormElement;
-      const formData = new FormData();
-      // Create FormData object
-      const name = formData.get("name")?.toString().trim() || "";
+      const formData = new FormData(target);
+
+      // Extract all form values first
+      const VenuName = formData.get("name")?.toString().trim() || "";
       const description = formData.get("description")?.toString().trim() || "";
       const location = formData.get("location")?.toString().trim() || "";
       const price = formData.get("price")?.toString().trim() || "";
@@ -61,33 +133,49 @@ const Add_Product = () => {
       const seatedCapacity =
         formData.get("seatedCapacity")?.toString().trim() || "";
       const size = formData.get("size")?.toString().trim() || "";
-      const features = formData.get("features")?.toString().trim() || "";
-      pics.forEach((file) => {
-        formData.append("pics", file);
-      });
 
+      // Validate required fields
       if (
-        !name ||
+        !VenuName ||
         !description ||
         !location ||
         !price ||
         !type ||
         !standingCapacity ||
         !seatedCapacity ||
-        !size ||
-        !features
+        !size
       ) {
         toast.error("All fields are required.");
         return;
       }
-    }
-    try {
-      await dispatch(addProductThunk({}));
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+
+      try {
+        // Append pictures to formData
+        pics.forEach((file) => {
+          formData.append("pics", file);
+        });
+
+        // Dispatch with all required properties
+        await dispatch(
+          addProductThunk({
+            VenuName,
+            description,
+            location,
+            price,
+            type,
+            standingCapacity, // Now properly declared
+            seatedCapacity, // Now properly declared
+            size,
+            // features,
+          })
+        ).unwrap();
+        target.reset();
+        toast.success("Product added successfully!");
+      } catch (error: any) {
+        toast.error(error.message || "Something went wrong");
+      }
     }
   };
-  // Remove an image from the selected files
   const handleRemoveImage = (index: number) => {
     const updatedPics = pics.filter((_, i) => i !== index);
     setPics(updatedPics);
@@ -243,6 +331,7 @@ const Add_Product = () => {
               <input
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                 type="number"
+                name="standingCapacity"
                 required
               />
             </div>
@@ -253,6 +342,7 @@ const Add_Product = () => {
               <input
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                 type="number"
+                name="seatedCapacity"
                 required
               />
             </div>
@@ -263,6 +353,7 @@ const Add_Product = () => {
               <input
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                 type="number"
+                name="size"
                 required
               />
             </div>

@@ -5,7 +5,12 @@ export const CreateProduct = async (product: Partial<ProductTypes>) => {
   try {
     const response = await axios.post(
       `http://localhost:3000/api/v1/product/create-product`,
-      product
+      product,
+      {
+        headers: {
+          Authorization: `Beare ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -31,20 +36,39 @@ export const GetAllProduct = async () => {
 export const GetProductById = async (id: any) => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/v1/product/get-product/${id}`
+      `http://localhost:3000/api/v1/product/get-product/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error in GetProdutById", error);
   }
 };
 
-export const EditProduct = async (id: any) => {
+export const EditProduct = async ({
+  id,
+  updateProduct,
+}: {
+  id: string;
+  updateProduct: Partial<ProductTypes>;
+}) => {
   try {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/product//update-product/${id}`
+      `http://localhost:3000/api/v1/product/update-product/${id}`,
+      {
+        updateProduct,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error in EditProduct", error);
   }

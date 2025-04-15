@@ -42,8 +42,14 @@ export const deleteProductThunk = createAsyncThunk(
 );
 export const editProductThunk = createAsyncThunk(
   "product/edit-product",
-  async (id: string) => {
-    const editProduct = await EditProduct(id);
+  async ({
+    id,
+    updateProduct,
+  }: {
+    id: string;
+    updateProduct: Partial<ProductTypes>;
+  }) => {
+    const editProduct = await EditProduct({ id, updateProduct });
     return editProduct;
   }
 );
@@ -60,6 +66,7 @@ const productSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      // get All Product
       .addCase(getProductThunk.pending, (state) => {
         state.apiCallInProgress = true;
       })
@@ -70,6 +77,7 @@ const productSlice = createSlice({
       .addCase(getProductThunk.rejected, (state) => {
         state.apiCallInProgress = false;
       })
+      // Add a product
       .addCase(addProductThunk.pending, (state) => {
         state.apiCallInProgress = true;
       })
@@ -79,7 +87,27 @@ const productSlice = createSlice({
       })
       .addCase(addProductThunk.rejected, (state) => {
         state.apiCallInProgress = false;
+      })
+      // Edit Product
+      .addCase(editProductThunk.pending, (state) => {
+        state.apiCallInProgress = true;
+      })
+      .addCase(editProductThunk.fulfilled, (state, action) => {
+        state.apiCallInProgress = false;
+        const updatedProduct = action.payload?.data;
+        const index = state.items.findIndex(
+          (p) => p._id === updatedProduct._id
+        );
+        console.log(updatedProduct._id);
+        if (index !== -1) {
+          state.items[index] = updatedProduct;
+        }
+      })
+
+      .addCase(editProductThunk.rejected, (state) => {
+        state.apiCallInProgress = false;
       });
+    //
   },
 });
 

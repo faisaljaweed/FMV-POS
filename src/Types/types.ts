@@ -11,7 +11,7 @@ export type UserTypes = {
 
 export type ProductTypes = {
   _id: string;
-  name: string;
+  VenuName: string;
   description: string;
   location: string;
   type: string;

@@ -33,9 +33,15 @@ export const Register = async (user: Partial<UserTypes>) => {
 export const Logout = async () => {
   try {
     const response = await axios.post(
-      `http://localhost:3000/api/v1/user/logout`
+      `http://localhost:3000/api/v1/user/logout`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.log("Error fetching data:", error);
   }

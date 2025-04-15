@@ -1,335 +1,304 @@
-// import { useState } from "react";
-// import SearchIcon from "@mui/icons-material/Search";
-// interface Booking {
-//   _id: string;
-//   clientId?: {
-//     username?: string;
-//   };
-//   productId?: {
-//     name?: string;
-//   };
-//   bookingDate: string;
-//   status: string;
-// }
-
-// const GetProduct = () => {
-//   const [bookings, setBookings] = useState<Booking[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error] = useState(null);
-//   const [search, setSearch] = useState<string>("");
-//   // useEffect(() => {
-//   //   const getBooking = async () => {
-//   //     const token = localStorage.getItem("accessToken");
-//   //     try {
-//   //       const response = await axios.get(
-//   //         `http://localhost:3000/api/v1/booking/get-booking-only-admin`,
-//   //         {
-//   //           headers: {
-//   //             Authorization: `Bearer ${token}`,
-//   //           },
-//   //         }
-//   //       );
-//   //       setBookings(response.data.data); // Assuming the response has a `data` field
-//   //       setLoading(false);
-//   //     } catch (error) {
-//   //       console.error(error);
-//   //       // setError("Failed to fetch bookings");
-//   //       setLoading(false);
-//   //     }
-//   //   };
-//   //   getBooking();
-//   // }, []);
-
-//   // const handleDelete = (id: string) => {
-//   //   const token = localStorage.getItem("accessToken");
-//   //   axios
-//   //     .delete(`http://localhost:3000/api/v1/booking/delete-booking/${id}`, {
-//   //       headers: {
-//   //         Authorization: `Bearer ${token}`,
-//   //       },
-//   //     })
-//   //     .then((res) => {
-//   //       setBookings(bookings.filter((booking) => booking._id !== id));
-//   //       console.log(res);
-//   //     })
-//   //     .catch((err) => console.log(err));
-//   // };
-//   // if (loading) {
-//   //   return (
-//   //     <div className="flex justify-center items-center h-screen">
-//   //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-//   //     </div>
-//   //   );
-//   // }
-
-//   const filteredUsers = bookings.filter(
-//     (user) =>
-//       user.clientId?.username?.toLowerCase().includes(search.toLowerCase()) ||
-//       user.productId?.name?.toLowerCase().includes(search.toLowerCase()) ||
-//       user.bookingDate.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   if (error) {
-//     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <p className="text-red-500 text-xl">{error}</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 py-8">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-//           Check Booking Details
-//         </h1>
-//         <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-//           <SearchIcon className="text-gray-400 mr-2" aria-hidden="true" />
-//           <input
-//             type="text"
-//             placeholder="Search users..."
-//             value={search}
-//             onChange={(e) => setSearch(e.target.value)}
-//             className="w-full p-2 outline-none"
-//           />
-//         </div>
-//         <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-//           <table className="min-w-full divide-y divide-gray-200">
-//             <thead className="bg-gray-200">
-//               <tr>
-//                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                   Client Name
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                   Product Name
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                   Booking Date
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                   Status
-//                 </th>
-//                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                   Action
-//                 </th>
-//               </tr>
-//             </thead>
-//             <tbody className="bg-white divide-y divide-gray-200">
-//               {filteredUsers.map((booking) => (
-//                 <tr key={booking._id}>
-//                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-//                     {booking.clientId?.username || "N/A"}
-//                   </td>
-//                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-//                     {booking.productId?.name || "N/A"}
-//                   </td>
-//                   <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-//                     {new Date(booking.bookingDate).toLocaleDateString()}
-//                   </td>
-//                   <td className="px-4 py-2 whitespace-nowrap">
-//                     <span
-//                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-//                         booking.status === "approved"
-//                           ? "bg-green-100 text-green-800"
-//                           : booking.status === "rejected"
-//                           ? "bg-red-100 text-red-800"
-//                           : "bg-yellow-100 text-yellow-800"
-//                       }`}
-//                     >
-//                       {booking.status}
-//                     </span>
-//                   </td>
-//                   <td className="px-4 py-2 whitespace-nowrap">
-//                     <button
-//                       // onClick={() => handleDelete(booking._id)}
-//                       className="px-3 py-1 text-xs font-semibold rounded bg-red-500 text-white hover:bg-red-600 transition duration-200"
-//                     >
-//                       Delete
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default GetProduct;
-
-import { useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  location: string;
-  type: string;
-  price: number;
-  vendorId: string;
-  standingCapacity: number;
-  seatedCapacity: number;
-  size: number;
-  features: {
-    swimmingPool: boolean;
-    parking: boolean;
-    wifi: boolean;
-    secuirty: boolean;
-    kitchen: boolean;
-    bbqArea: boolean;
-    airCondition: boolean;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+import { useState, useEffect } from "react";
+import { useAppDispatch } from "../../store/hooks";
+import { editProductThunk, getProductThunk } from "../../store/productSlice";
+import { ProductTypes } from "../../Types/types";
+import CustomButton from "../../Components/Button";
 
 const Get_Product = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>("");
-  // useEffect(() => {
-  //   const getBooking = async () => {
-  //     const token = localStorage.getItem("accessToken");
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:3000/api/v1/booking/get-booking-only-admin`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setBookings(response.data.data); // Assuming the response has a `data` field
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error(error);
-  //       // setError("Failed to fetch bookings");
-  //       setLoading(false);
-  //     }
-  //   };
-  //   getBooking();
-  // }, []);
-
-  // const handleDelete = (id: string) => {
-  //   const token = localStorage.getItem("accessToken");
-  //   axios
-  //     .delete(`http://localhost:3000/api/v1/booking/delete-booking/${id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setBookings(bookings.filter((booking) => booking._id !== id));
-  //       console.log(res);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  //     </div>
-  //   );
-  // }
-
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+  const [products, setProducts] = useState<ProductTypes[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductTypes | null>(
+    null
   );
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  //     </div>
-  //   );
-  // }
+  const dispatch = useAppDispatch();
+  const userString = localStorage.getItem("user");
+  const currentUser = userString ? JSON.parse(userString) : null;
+  const currentVendorId = currentUser ? currentUser._id : null;
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-xl">{error}</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    dispatch(getProductThunk())
+      .unwrap()
+      .then((res) => {
+        const allProduct: ProductTypes[] = res.data;
+
+        // Debug all products' vendorId
+
+        // Filter products by current vendor
+        const filteredProducts = currentVendorId
+          ? allProduct.filter((product) => product.vendorId === currentVendorId)
+          : [];
+
+        setProducts(filteredProducts);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [dispatch]);
+
+  // const handleEdit = (id: string) => {
+  //   const updateProduct = {}; // Provide the necessary updates here
+  //   dispatch(editProductThunk({ id, updateProduct }));
+  // };
+
+  const handleEdit = (product: ProductTypes) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Get All Products
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+            Venue Catalog
+          </h1>
+          <p className="text-lg text-gray-600">
+            Browse and manage all available venues
+          </p>
+        </div>
 
-        <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-          <SearchIcon className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 outline-none"
-          />
-        </div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Capacity
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Size
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Feature
-              </th>
-            </tr>
-          </thead>
-        </table>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product._id}
-              className="bg-white p-4 shadow-md rounded-lg"
-            >
-              <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-              <p className="text-gray-600">{product.description}</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Location: {product.location}
-              </p>
-              <p className="text-sm">Price: Rs. {product.price}</p>
-              <p className="text-sm">
-                Capacity: {product.standingCapacity} standing /{" "}
-                {product.seatedCapacity} seated
-              </p>
-              <p className="text-sm">Size: {product.size} sq ft</p>
-              <div className="mt-2 text-sm">
-                Features:
-                <ul className="list-disc ml-5">
-                  {Object.entries(product.features).map(([key, value]) => (
-                    <li
-                      key={key}
-                      className={value ? "text-green-600" : "text-red-500"}
+        {/* Products Grid */}
+        {products.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-500">
+              No venues found matching your search
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product) => (
+              <div
+                key={product._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="p-6">
+                  <div className="flex justify-between items-start">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      {product.VenuName}
+                    </h2>
+                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                      {product.size} sq ft
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 mb-4">{product.description}</p>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Location:
+                      </span>
+                      <span className="text-gray-600">{product.location}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Price:
+                      </span>
+                      <span className="text-gray-600">Rs. {product.price}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="font-medium text-gray-700 w-24">
+                        Capacity:
+                      </span>
+                      <span className="text-gray-600">
+                        {product.standingCapacity} standing /{" "}
+                        {product.seatedCapacity} seated
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-gray-800 mb-2">
+                      Features:
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(product.features).map(([key, value]) => (
+                        <div key={key} className="flex items-center">
+                          <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                              value ? "bg-green-500" : "bg-red-500"
+                            }`}
+                          ></span>
+                          <span className="text-sm text-gray-700">{key}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <CustomButton
+                      type="button"
+                      onClick={() => handleEdit(product)}
+                      className="flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-300"
                     >
-                      {key}: {value ? "Yes" : "No"}
-                    </li>
-                  ))}
-                </ul>
+                      Edit
+                    </CustomButton>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
+      {isModalOpen && selectedProduct && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl relative">
+            <h2 className="text-2xl font-semibold mb-4">Edit Product</h2>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const updateProduct = {
+                  VenuName: selectedProduct.VenuName,
+                  location: selectedProduct.location,
+                  price: selectedProduct.price,
+                  size: selectedProduct.size,
+                  description: selectedProduct.description,
+                  seatedCapacity: selectedProduct.seatedCapacity,
+                  standingCapacity: selectedProduct.standingCapacity,
+                  type: selectedProduct.type,
+                  // features: selectedProduct.features,
+                };
+                dispatch(
+                  editProductThunk({ id: selectedProduct._id, updateProduct })
+                )
+                  .unwrap()
+                  .then(() => setIsModalOpen(false));
+              }}
+              className="space-y-4"
+            >
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.VenuName}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    VenuName: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Location"
+                value={selectedProduct.description}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    description: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                type="number"
+                className="w-full border p-2"
+                placeholder="Price"
+                value={selectedProduct.price}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    price: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.seatedCapacity}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    seatedCapacity: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.standingCapacity}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    standingCapacity: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.location}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    location: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.size}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    size: e.target.value,
+                  })
+                }
+              />
+              <select
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                id="type"
+                name="type"
+                required
+              >
+                <option value="" disabled>
+                  Select Product Type
+                </option>
+                <option value="farm house">Farm House</option>
+                <option value="hall">Hall</option>
+                <option value="banquet">Banquet</option>
+                <option value="villas">Villas</option>
+                <option value="murqee">Murqee</option>
+              </select>
+              <input
+                type="text"
+                className="w-full border p-2"
+                placeholder="Venue Name"
+                value={selectedProduct.size}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    size: e.target.value,
+                  })
+                }
+              />
+              {/* Add other fields as needed */}
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-300 rounded"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                >
+                  Update
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
