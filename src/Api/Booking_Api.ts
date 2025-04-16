@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BookingTypes } from "../Types/types";
 
 // export const AddBooking = async () => {
 //   try {
@@ -26,8 +27,9 @@ export const AddBooking = async (
   totalGuest: string,
   message: string,
   email: string,
-  vendorId: string,
-  userId: string
+  userId: string,
+  // booking: Partial<BookingTypes>,
+  vendorId: string
 ) => {
   try {
     const response = await axios.post(
@@ -41,8 +43,9 @@ export const AddBooking = async (
         totalGuest,
         message,
         email,
-        vendorId,
         userId,
+        vendorId,
+        status: "pending",
       },
       {
         headers: {
@@ -73,10 +76,16 @@ export const GetBooking = async () => {
   }
 };
 
-export const UpdateBooking = async (id: any) => {
+export const UpdateBooking = async (id: string, data: { status: string }) => {
   try {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/booking/update-booking/${id}`
+      `http://localhost:3000/api/v1/booking/update-booking/${id}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     return response;
   } catch (error) {
@@ -87,7 +96,12 @@ export const UpdateBooking = async (id: any) => {
 export const DeleteBooking = async (id: any) => {
   try {
     const response = await axios.delete(
-      `http://localhost:3000/api/v1/booking/delete-booking/${id}`
+      `http://localhost:3000/api/v1/booking/delete-booking/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
     );
     return response;
   } catch (error) {
@@ -95,7 +109,7 @@ export const DeleteBooking = async (id: any) => {
   }
 };
 
-export const GetSpecificBooking = async (id: any) => {
+export const GetSpecificBooking = async (id: string) => {
   try {
     const response = await axios.get(
       `http://localhost:3000/api/v1/booking/get-specific-booking/${id}`,

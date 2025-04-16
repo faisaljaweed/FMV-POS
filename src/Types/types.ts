@@ -32,3 +32,15 @@ export type ProductTypes = {
   createdAt: string;
   updatedAt: string;
 };
+export type BookingTypes = {
+  bookingDate: string;
+  productId: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  totalGuest: string;
+  message: string;
+  email: string;
+  userId: string;
+  vendorId: string;
+};

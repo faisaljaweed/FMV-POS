@@ -9,6 +9,9 @@ import {
   GetBooking,
   GetSpecificBooking,
 } from "../../Api/Booking_Api";
+import { useAppDispatch } from "../../store/hooks";
+import { getProductThunk } from "../../store/productSlice";
+import { ProductTypes } from "../../Types/types";
 
 const Add_Booking = () => {
   const { id } = useParams();
@@ -16,7 +19,8 @@ const Add_Booking = () => {
   const [bookedDates, setBookedDates] = useState<Date[]>([]); // Track booked dates
   const [userBookedProducts] = useState<string[]>([]); // Store user booked products
   const [bookingStatus, setBookingStatus] = useState<string | null>(null);
-
+  const [products, setProducts] = useState<ProductTypes[]>([]);
+  const [bookingDate, setBookingDate] = useState<string>("");
   // Form to add booking
   const [name, setName] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -24,8 +28,65 @@ const Add_Booking = () => {
   const [totalGuest, settotalGuest] = useState("");
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
-  const userId = localStorage.getItem("user") ?? "";
-  const vendorId = localStorage.getItem("user") ?? "";
+  const [selectedProduct, setSelectedProduct] = useState<{
+    productId: string;
+    vendorId: string;
+  } | null>(null);
+
+  const dispatch = useAppDispatch();
+  const userString = localStorage.getItem("user");
+  const currentUser = userString ? JSON.parse(userString) : null;
+  const currentVendorId = currentUser ? currentUser._id : null;
+  const timeSlots = [
+    "01:00 ",
+    "01:30 ",
+    "02:00 ",
+    "02:30 ",
+    "03:00 ",
+    "03:30 ",
+    "04:00 ",
+    "04:30 ",
+    "05:00 ",
+    "05:30 ",
+    "06:00 ",
+    "06:30 ",
+    "07:00 ",
+    "07:30 ",
+    "08:00 ",
+    "08:30 ",
+    "09:00 ",
+    "09:30 ",
+    "10:00 ",
+    "10:30 ",
+    "11:00 ",
+    "11:30 ",
+    "12:00 ",
+  ];
+
+  // useEffect(() => {
+  //   const fetchBookedDates = async () => {
+  //     try {
+  //       const token = localStorage.getItem("accessToken");
+  //       const response = await axios.get(
+  //         `http://localhost:3000/api/v1/property/get-specific-booking/${selectedProduct}`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data);
+  //       const dates = response.data.data.map(
+  //         (dateString: string) => new Date(dateString)
+  //       );
+  //       setBookedDates(dates); // Booked dates ko state mein set karein
+  //     } catch (error) {
+  //       console.error("Error fetching booked dates:", error);
+  //     }
+  //   };
+
+  //   fetchBookedDates();
+  // }, [selectedProduct]);
   // useEffect(() => {
   //   const fetchBookedDates = async (id: string) => {
   //     try {
@@ -91,51 +152,72 @@ const Add_Booking = () => {
       return;
     }
 
-    // if (!id) {
-    //   toast.error("Product information is not available. Please try again.");
-    //   return;
-    // }
-
     // Additional validation for other required fields
-    if (!name || !startTime || !endTime || !totalGuest || !email) {
+    if (
+      !name ||
+      !startTime ||
+      !endTime ||
+      !totalGuest ||
+      !email ||
+      !selectedProduct
+    ) {
       toast.error("Please fill all required fields");
       return;
     }
 
     try {
-      const bookingDate = startDate.toISOString();
+      const bookingDate = startDate.toISOString().split("T")[0];
       const response = await AddBooking(
         bookingDate,
-        id ?? "",
+        selectedProduct.productId,
         name,
         startTime,
         endTime,
         totalGuest,
         message,
         email,
-        userId,
-        vendorId
+        currentVendorId,
+        selectedProduct.vendorId
       );
+      console.log(response);
 
-      if (response?.status === 200) {
-        toast.success("Booking request sent successfully!");
-        // Reset form after successful submission
-        setName("");
-        setStartDate(null);
-        setStartTime("");
-        setEndTime("");
-        settotalGuest("");
-        setMessage("");
-        setEmail("");
-      } else {
-        toast.error(response?.data?.message || "Booking submission failed");
-      }
+      toast.success("Booking request sent successfully!");
+      // Reset form after successful submission
+      setName("");
+      setStartDate(null);
+      setStartTime("");
+      setEndTime("");
+      settotalGuest("");
+      setMessage("");
+      setEmail("");
+      setSelectedProduct(null);
     } catch (error: any) {
       console.error("Booking error:", error);
       toast.error(error.response?.data?.message || "Failed to submit booking");
     }
   };
 
+  // console.log(currentVendorId);
+  useEffect(() => {
+    dispatch(getProductThunk())
+      .unwrap()
+      .then((res) => {
+        const allProduct: ProductTypes[] = res.data;
+
+        // Debug all products' vendorId
+
+        // Filter products by current vendor
+        const filteredProducts = currentVendorId
+          ? allProduct.filter((product) => product.vendorId === currentVendorId)
+          : [];
+
+        setProducts(filteredProducts);
+        // console.log(filteredProducts);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [dispatch]);
   return (
     <div className="max-w-7xl mx-auto p-4">
       <div>
@@ -157,7 +239,10 @@ const Add_Booking = () => {
               <div className="flex items-center  border-[1.5px] border-black rounded-lg p-2">
                 <DatePicker
                   selected={startDate}
-                  onChange={(date: Date | null) => setStartDate(date)}
+                  onChange={(date: Date | null) => {
+                    setStartDate(date);
+                    setBookingDate(date ? date.toISOString() : "");
+                  }}
                   selectsStart
                   startDate={startDate}
                   endDate={startDate}
@@ -174,61 +259,26 @@ const Add_Booking = () => {
                   className="w-full rounded-lg p-2 border-[1.5px] border-black"
                   required
                 >
-                  <option>Starts</option>
-                  <option value={"01:00 am"}>01:00 am</option>
-                  <option value={"01:30 am"}>01:30 am</option>
-                  <option value={"02:00 am"}>02:00 am</option>
-                  <option value={"02:30 am"}>02:30 am</option>
-                  <option value={"03:00 am"}>03:00 am</option>
-                  <option value={"03:30 am"}>03:30 am</option>
-                  <option value={"04:00 am"}>04:00 am</option>
-                  <option value={"04:30 am"}>04:30 am</option>
-                  <option value={"05:00 am"}>05:00 am</option>
-                  <option value={"05:30 am"}>05:30 am</option>
-                  <option value={"06:00 am"}>06:00 am</option>
-                  <option value={"06:30 am"}>06:30 am</option>
-                  <option value={"07:00 am"}>07:00 am</option>
-                  <option value={"07:30 am"}>07:30 am</option>
-                  <option value={"08:00 am"}>08:00 am</option>
-                  <option value={"08:30 am"}>08:30 am</option>
-                  <option value={"09:00 am"}>09:00 am</option>
-                  <option value={"09:30 am"}>09:30 am</option>
-                  <option value={"10:00 am"}>10:00 am</option>
-                  <option value={"10:30 am"}>10:30 am</option>
-                  <option value={"11:00 am"}>11:00 am</option>
-                  <option value={"11:30 am"}>11:30 am</option>
-                  <option value={"12:00 am"}>12:00 am</option>
+                  <option value="">Starts</option>
+                  {timeSlots.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
                 </select>
+
                 <select
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   className="w-full border-[1.5px] border-black rounded-lg p-2"
                   required
                 >
-                  <option>Ends</option>
-                  <option value={"01:00 am"}>01:00 am</option>
-                  <option value={"01:30 am"}>01:30 am</option>
-                  <option value={"02:00 am"}>02:00 am</option>
-                  <option value={"02:30 am"}>02:30 am</option>
-                  <option value={"03:00 am"}>03:00 am</option>
-                  <option value={"03:30 am"}>03:30 am</option>
-                  <option value={"04:00 am"}>04:00 am</option>
-                  <option value={"04:30 am"}>04:30 am</option>
-                  <option value={"05:00 am"}>05:00 am</option>
-                  <option value={"05:30 am"}>05:30 am</option>
-                  <option value={"06:00 am"}>06:00 am</option>
-                  <option value={"06:30 am"}>06:30 am</option>
-                  <option value={"07:00 am"}>07:00 am</option>
-                  <option value={"07:30 am"}>07:30 am</option>
-                  <option value={"08:00 am"}>08:00 am</option>
-                  <option value={"08:30 am"}>08:30 am</option>
-                  <option value={"09:00 am"}>09:00 am</option>
-                  <option value={"09:30 am"}>09:30 am</option>
-                  <option value={"10:00 am"}>10:00 am</option>
-                  <option value={"10:30 am"}>10:30 am</option>
-                  <option value={"11:00 am"}>11:00 am</option>
-                  <option value={"11:30 am"}>11:30 am</option>
-                  <option value={"12:00 am"}>12:00 am</option>
+                  <option value="">Ends</option>
+                  {timeSlots.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex items-center border-[1.5px] border-black rounded-lg p-2">
@@ -241,6 +291,33 @@ const Add_Booking = () => {
                   required
                 />
               </div>
+              <div className="flex items-center border-[1.5px] border-black rounded-lg p-2 bg-white shadow-sm">
+                <select
+                  className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onChange={(e) => {
+                    const selected = JSON.parse(e.target.value);
+                    setSelectedProduct({
+                      productId: selected.id,
+                      vendorId: selected.vendorId,
+                    });
+                  }}
+                  required
+                >
+                  <option value="">Select Venue</option>
+                  {products.map((product, index) => (
+                    <option
+                      key={index}
+                      value={JSON.stringify({
+                        id: product._id,
+                        vendorId: product.vendorId,
+                      })}
+                    >
+                      {product.VenuName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <textarea
                 placeholder="Message"
                 value={message}

@@ -36,11 +36,6 @@ const Get_Product = () => {
       });
   }, [dispatch]);
 
-  // const handleEdit = (id: string) => {
-  //   const updateProduct = {}; // Provide the necessary updates here
-  //   dispatch(editProductThunk({ id, updateProduct }));
-  // };
-
   const handleEdit = (product: ProductTypes) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
