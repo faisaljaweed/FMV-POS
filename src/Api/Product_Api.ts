@@ -1,14 +1,15 @@
 import axios from "axios";
 import { ProductTypes } from "../Types/types";
 
-export const CreateProduct = async (product: Partial<ProductTypes>) => {
+export const CreateProduct = async (formData: FormData) => {
   try {
     const response = await axios.post(
       `http://localhost:3000/api/v1/product/create-product`,
-      product,
+      formData,
       {
         headers: {
           Authorization: `Beare ${localStorage.getItem("accessToken")}`,
+          "content-type": "multipart/form-data",
         },
       }
     );

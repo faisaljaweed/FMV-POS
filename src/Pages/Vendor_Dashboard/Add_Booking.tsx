@@ -11,7 +11,7 @@ import {
 } from "../../Api/Booking_Api";
 import { useAppDispatch } from "../../store/hooks";
 import { getProductThunk } from "../../store/productSlice";
-import { ProductTypes } from "../../Types/types";
+import { BookingTypes, ProductTypes } from "../../Types/types";
 
 const Add_Booking = () => {
   const { id } = useParams();
@@ -63,85 +63,37 @@ const Add_Booking = () => {
     "12:00 ",
   ];
 
-  // useEffect(() => {
-  //   const fetchBookedDates = async () => {
-  //     try {
-  //       const token = localStorage.getItem("accessToken");
-  //       const response = await axios.get(
-  //         `http://localhost:3000/api/v1/property/get-specific-booking/${selectedProduct}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data);
-  //       const dates = response.data.data.map(
-  //         (dateString: string) => new Date(dateString)
-  //       );
-  //       setBookedDates(dates); // Booked dates ko state mein set karein
-  //     } catch (error) {
-  //       console.error("Error fetching booked dates:", error);
-  //     }
-  //   };
+  useEffect(() => {
+    if (selectedProduct) {
+      // Get all bookings for this selected product
+      GetBooking()
+        .then((res) => {
+          const allBookings: BookingTypes[] = res?.data.data;
 
-  //   fetchBookedDates();
-  // }, [selectedProduct]);
-  // useEffect(() => {
-  //   const fetchBookedDates = async (id: string) => {
-  //     try {
-  //       GetSpecificBooking(id).then((response) => {
-  //         if (response && response.data && response.data.data) {
-  //           console.log(response.data.data);
-  //           const dates = response.data.data.map(
-  //             (dateString: string) => new Date(dateString)
-  //           );
-  //           setBookedDates(dates);
-  //         } else {
-  //           console.error("Response or data is undefined");
-  //         }
-  //       });
+          const selectedProductBookings = allBookings.filter(
+            (booking) =>
+              booking.productId === selectedProduct.productId &&
+              booking.status === "approved"
+          );
 
-  //       // Booked dates ko state mein set karein
-  //     } catch (error) {
-  //       console.error("Error fetching booked dates:", error);
-  //     }
-  //   };
+          // Convert booked dates into Date objects
+          const booked = selectedProductBookings.map(
+            (booking) => new Date(booking.bookingDate)
+          );
 
-  //   if (id) {
-  //     fetchBookedDates(id);
-  //   }
-  // }, [id]);
+          setBookedDates(booked); // Set the disabled dates in calendar
+        })
+        .catch((err) => {
+          console.log("Error fetching bookings for selected product:", err);
+        });
+    } else {
+      setBookedDates([]); // Reset if no product is selected
+    }
+  }, [selectedProduct]);
 
-  // useEffect(() => {
-  //   const fetchBookings = async () => {
-  //     try {
-  //       GetBooking().then((response) => {
-  //         const currentDate = new Date();
-  //         const activeBooking = response?.data?.data?.find(
-  //           (booking: {
-  //             bookingDate: string;
-  //             productId: string;
-  //             status: string;
-  //           }) =>
-  //             new Date(booking.bookingDate) >= currentDate &&
-  //             booking.productId === id
-  //         );
-
-  //         if (activeBooking) {
-  //           setBookingStatus(activeBooking.status); // Set booking status
-  //           if (activeBooking.status === "approved") {
-  //             setStartDate(new Date(activeBooking.bookingDate));
-  //           }
-  //         }
-  //       });
-  //     } catch (error) {
-  //       console.error("Error fetching bookings:", error);
-  //     }
-  //   };
-
-  //   fetchBookings();
-  // }, [id]);
+  useEffect(() => {
+    console.log("Booked Dates:", bookedDates);
+  }, [bookedDates]);
 
   const addBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,6 +188,32 @@ const Add_Booking = () => {
                 className="w-full border-[1.5px] border-black rounded-lg p-2"
                 required
               />
+              <div className="flex items-center border-[1.5px] border-black rounded-lg p-2 bg-white shadow-sm">
+                <select
+                  className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onChange={(e) => {
+                    const selected = JSON.parse(e.target.value);
+                    setSelectedProduct({
+                      productId: selected.id,
+                      vendorId: selected.vendorId,
+                    });
+                  }}
+                  required
+                >
+                  <option value="">Select Venue</option>
+                  {products.map((product, index) => (
+                    <option
+                      key={index}
+                      value={JSON.stringify({
+                        id: product._id,
+                        vendorId: product.vendorId,
+                      })}
+                    >
+                      {product.VenuName}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="flex items-center  border-[1.5px] border-black rounded-lg p-2">
                 <DatePicker
                   selected={startDate}
@@ -291,33 +269,6 @@ const Add_Booking = () => {
                   required
                 />
               </div>
-              <div className="flex items-center border-[1.5px] border-black rounded-lg p-2 bg-white shadow-sm">
-                <select
-                  className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  onChange={(e) => {
-                    const selected = JSON.parse(e.target.value);
-                    setSelectedProduct({
-                      productId: selected.id,
-                      vendorId: selected.vendorId,
-                    });
-                  }}
-                  required
-                >
-                  <option value="">Select Venue</option>
-                  {products.map((product, index) => (
-                    <option
-                      key={index}
-                      value={JSON.stringify({
-                        id: product._id,
-                        vendorId: product.vendorId,
-                      })}
-                    >
-                      {product.VenuName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <textarea
                 placeholder="Message"
                 value={message}
@@ -335,7 +286,7 @@ const Add_Booking = () => {
               />
 
               <div className="mt-6 flex justify-center">
-                {bookingStatus ? (
+                {/* {bookingStatus ? (
                   <div>
                     <p className="text-lg font-semibold">
                       Booking Status:{" "}
@@ -368,7 +319,10 @@ const Add_Booking = () => {
                   >
                     Book Now
                   </button>
-                )}
+                )} */}
+                <button className="w-full bg-[#4f46e5] text-white py-2 rounded-lg font-bold hover:bg-pink-600">
+                  Book Now
+                </button>
               </div>
               <p className="text-center text-gray-500 text-sm">
                 © Venue Will Respond Shortly

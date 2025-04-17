@@ -28,8 +28,8 @@ export const getProductThunk = createAsyncThunk(
 );
 export const addProductThunk = createAsyncThunk(
   "product/add-product",
-  async (product: Partial<ProductTypes>) => {
-    const createProduct = await CreateProduct(product);
+  async (formData: FormData) => {
+    const createProduct = await CreateProduct(formData);
     return createProduct;
   }
 );

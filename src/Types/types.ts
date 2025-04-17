@@ -20,6 +20,7 @@ export type ProductTypes = {
   standingCapacity: string;
   seatedCapacity: string;
   size: string;
+  pics: string[];
   features: {
     swimmingPool: boolean;
     parking: boolean;
@@ -33,6 +34,7 @@ export type ProductTypes = {
   updatedAt: string;
 };
 export type BookingTypes = {
+  status: string;
   bookingDate: string;
   productId: string;
   name: string;

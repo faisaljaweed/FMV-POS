@@ -28,7 +28,7 @@ const Get_Product = () => {
         const filteredProducts = currentVendorId
           ? allProduct.filter((product) => product.vendorId === currentVendorId)
           : [];
-
+        console.log(filteredProducts);
         setProducts(filteredProducts);
       })
       .catch((err) => {
@@ -68,6 +68,33 @@ const Get_Product = () => {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="p-6">
+                  <div className="mb-4">
+                    {product.pics && product.pics.length > 0 && (
+                      <>
+                        {/* First image - large */}
+                        <div className="mb-2">
+                          <img
+                            src={product.pics[0]}
+                            alt="Main Venue"
+                            className="w-full h-64 object-cover rounded-lg"
+                          />
+                        </div>
+
+                        {/* Other images - thumbnails */}
+                        <div className="grid grid-cols-4 gap-2">
+                          {product.pics.slice(1).map((pic, index) => (
+                            <img
+                              key={index}
+                              src={pic}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="h-20 w-full object-cover rounded-md"
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
                   <div className="flex justify-between items-start">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">
                       {product.VenuName}

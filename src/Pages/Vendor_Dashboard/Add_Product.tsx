@@ -15,8 +15,9 @@ const Add_Product = () => {
     bbqArea: false,
     airConditioning: false,
   });
-  const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
+  // const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
   const dispatch = useAppDispatch();
+
   const handleFeatureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFeatures((prev) => ({
@@ -56,57 +57,60 @@ const Add_Product = () => {
 
     if (pics.length > 0) {
       const target = e.target as HTMLFormElement;
-      const formData = new FormData(target);
 
-      // Extract all form values first
-      const VenuName = formData.get("name")?.toString().trim() || "";
-      const description = formData.get("description")?.toString().trim() || "";
-      const location = formData.get("location")?.toString().trim() || "";
-      const price = formData.get("price")?.toString().trim() || "";
-      const type = formData.get("type")?.toString().trim() || "";
-      const standingCapacity =
-        formData.get("standingCapacity")?.toString().trim() || "";
-      const seatedCapacity =
-        formData.get("seatedCapacity")?.toString().trim() || "";
-      const size = formData.get("size")?.toString().trim() || "";
+      const formData = new FormData();
+      const VenuName = (
+        target.elements.namedItem("name") as HTMLInputElement
+      )?.value.trim();
+      formData.append("VenuName", VenuName);
+      const description = (
+        target.elements.namedItem("description") as HTMLInputElement
+      )?.value.trim();
+      formData.append("description", description);
+      const location = (
+        target.elements.namedItem("location") as HTMLInputElement
+      )?.value.trim();
+      formData.append("location", location);
+      const price = (
+        target.elements.namedItem("price") as HTMLInputElement
+      )?.value.trim();
+      formData.append("price", price);
+      const type = (
+        target.elements.namedItem("type") as HTMLSelectElement
+      )?.value.trim();
+      formData.append("type", type);
+      const standingCapacity = (
+        target.elements.namedItem("standingCapacity") as HTMLInputElement
+      )?.value.trim();
+      formData.append("standingCapacity", standingCapacity);
+      const seatedCapacity = (
+        target.elements.namedItem("seatedCapacity") as HTMLInputElement
+      )?.value.trim();
+      formData.append("seatedCapacity", seatedCapacity);
+      const size = (
+        target.elements.namedItem("size") as HTMLInputElement
+      )?.value.trim();
+      formData.append("size", size);
+      formData.append("features", JSON.stringify(features)); // stringified object
 
-      // Validate required fields
-      if (
-        !VenuName ||
-        !description ||
-        !location ||
-        !price ||
-        !type ||
-        !standingCapacity ||
-        !seatedCapacity ||
-        !size
-      ) {
-        toast.error("All fields are required.");
-        return;
-      }
+      pics.forEach((file) => {
+        formData.append("pics", file); // multiple files
+      });
 
       try {
         // Append pictures to formData
-        pics.forEach((file) => {
-          formData.append("pics", file);
-        });
 
         // Dispatch with all required properties
-        await dispatch(
-          addProductThunk({
-            VenuName,
-            description,
-            location,
-            price,
-            type,
-            standingCapacity, // Now properly declared
-            seatedCapacity, // Now properly declared
-            size,
-            // features,
+        await dispatch(addProductThunk(formData))
+          .unwrap()
+          .then(() => {
+            toast.success("Product Added Successfully");
+            target.reset();
           })
-        ).unwrap();
-        target.reset();
-        toast.success("Product added successfully!");
+          .catch((err) => {
+            toast.error("Something went wrong");
+            console.log(err);
+          });
       } catch (error: any) {
         toast.error(error.message || "Something went wrong");
       }
@@ -117,10 +121,6 @@ const Add_Product = () => {
     setPics(updatedPics);
   };
 
-  // Open image in full screen
-  const handleImageClick = (imageUrl: string) => {
-    setFullScreenImage(imageUrl);
-  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-2xl bg-white p-8 rounded-lg shadow-lg">
@@ -243,9 +243,6 @@ const Add_Product = () => {
                         src={URL.createObjectURL(file)}
                         alt={`Selected ${index + 1}`}
                         className="w-full h-full object-cover cursor-pointer"
-                        onClick={() =>
-                          handleImageClick(URL.createObjectURL(file))
-                        }
                       />
                       {/* Cross Button */}
                       <button
