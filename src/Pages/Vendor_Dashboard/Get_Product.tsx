@@ -11,10 +11,27 @@ const Get_Product = () => {
     null
   );
 
+  // full screen image
+  const [isImageOpen, setIsImageOpen] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  //
   const dispatch = useAppDispatch();
   const userString = localStorage.getItem("user");
   const currentUser = userString ? JSON.parse(userString) : null;
   const currentVendorId = currentUser ? currentUser._id : null;
+
+  // clicl top open image close full screen
+
+  const openImage = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setIsImageOpen(true);
+  };
+
+  // Function to close the image
+  const closeImage = () => {
+    setIsImageOpen(false);
+    setSelectedImage("");
+  };
 
   useEffect(() => {
     dispatch(getProductThunk())
@@ -77,6 +94,9 @@ const Get_Product = () => {
                             src={product.pics[0]}
                             alt="Main Venue"
                             className="w-full h-64 object-cover rounded-lg"
+                            onClick={() => {
+                              openImage(product.pics[0]);
+                            }}
                           />
                         </div>
 
@@ -88,6 +108,9 @@ const Get_Product = () => {
                               src={pic}
                               alt={`Thumbnail ${index + 1}`}
                               className="h-20 w-full object-cover rounded-md"
+                              onClick={() => {
+                                openImage(pic);
+                              }}
                             />
                           ))}
                         </div>
@@ -319,6 +342,21 @@ const Get_Product = () => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+      {isImageOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-90 z-50">
+          <img
+            src={selectedImage}
+            alt="Full Screen"
+            className="max-w-full max-h-full"
+          />
+          <button
+            onClick={closeImage}
+            className="absolute top-4 right-4 text-white text-4xl font-bold"
+          >
+            &times;
+          </button>
         </div>
       )}
     </div>
