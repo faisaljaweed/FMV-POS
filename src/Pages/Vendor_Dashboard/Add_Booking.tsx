@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "react-toastify";
 import {
   AddBooking,
   GetBooking,
-  GetSpecificBooking,
+  // GetSpecificBooking,
 } from "../../Api/Booking_Api";
 import { useAppDispatch } from "../../store/hooks";
 import { getProductThunk } from "../../store/productSlice";
 import { BookingTypes, ProductTypes } from "../../Types/types";
 
 const Add_Booking = () => {
-  const { id } = useParams();
+  // const { id } = useParams();
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [bookedDates, setBookedDates] = useState<Date[]>([]); // Track booked dates
-  const [userBookedProducts] = useState<string[]>([]); // Store user booked products
-  const [bookingStatus, setBookingStatus] = useState<string | null>(null);
+  // const [userBookedProducts] = useState<string[]>([]); // Store user booked products
+  // const [bookingStatus, setBookingStatus] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductTypes[]>([]);
-  const [bookingDate, setBookingDate] = useState<string>("");
+  const [, setBookingDate] = useState<string>("");
   // Form to add booking
   const [name, setName] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -286,40 +286,6 @@ const Add_Booking = () => {
               />
 
               <div className="mt-6 flex justify-center">
-                {/* {bookingStatus ? (
-                  <div>
-                    <p className="text-lg font-semibold">
-                      Booking Status:{" "}
-                      <span
-                        className={`${
-                          bookingStatus === "pending"
-                            ? "text-yellow-500"
-                            : bookingStatus === "approved"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {bookingStatus.toUpperCase()}
-                      </span>
-                    </p>
-                    {bookingStatus === "approved" && startDate && (
-                      <p className="mt-2 text-blue-600">
-                        Booked Date: {startDate.toDateString()}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <button
-                    disabled={userBookedProducts.includes(id as string)}
-                    className={`px-6 py-3 ${
-                      userBookedProducts.includes(id as string)
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "w-full bg-[#4f46e5] text-white py-2 rounded-lg font-bold hover:bg-pink-600"
-                    } text-white font-semibold rounded-lg shadow-lg transition`}
-                  >
-                    Book Now
-                  </button>
-                )} */}
                 <button className="w-full bg-[#4f46e5] text-white py-2 rounded-lg font-bold hover:bg-pink-600">
                   Book Now
                 </button>
