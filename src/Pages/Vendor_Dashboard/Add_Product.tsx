@@ -26,9 +26,9 @@ const Add_Product = () => {
     }));
   };
 
-  const selectedFeatures = Object.entries(features)
-    .filter(([_, value]) => value)
-    .map(([key]) => key);
+  // const selectedFeatures = Object.entries(features)
+  //   .filter(([_, value]) => value)
+  //   .map(([key]) => key);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
