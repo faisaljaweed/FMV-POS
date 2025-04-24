@@ -1,33 +1,58 @@
 import axios from "axios";
-// import { BookingTypes } from "../Types/types";
-
-// export const AddBooking = async () => {
-//   try {
-//     const response = await axios.post(
-//       `https://fmv-pos-backend.vercel.app/api/v1/booking/add-booking`,
-//       {},
-//       {
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-//         },
-//       }
-//     );
-//     return response;
-//   } catch (error) {
-//     console.log("Error in AddBooking API: ", error);
-//   }
-// };
-
 export const AddBooking = async (
   bookingDate: string,
   productId: string,
   name: string,
   startTime: string,
   endTime: string,
-  totalGuest: string,
+  totalGuest: number,
   message: string,
-  email: string,
+  contactNumber: number,
+  type: string,
   userId: string,
+  paymentStatus: string,
+  advancePaid: number,
+  totalPrice: number,
+  specialRequests: string,
+  farmHouseDetails: {
+    poolAccess: boolean;
+    overnightStay: boolean;
+    catering: boolean;
+    numberOfRooms: number;
+    numberOfBeds: number;
+    kitchen: boolean;
+    parking: boolean;
+    wifi: boolean;
+    generator: boolean;
+    security: boolean;
+    barbecueArea: boolean;
+    playArea: boolean;
+  },
+  banquetDetails: {
+    guestCapacity: number;
+    cateringService: Boolean;
+    // menuTypes: String;
+    inHouseDecoration: Boolean;
+    stageAvailable: Boolean;
+    djMusic: Boolean;
+    valetParking: Boolean;
+    changingRoom: Boolean;
+    // eventTypesAllowed: String;
+    acAvailable: Boolean;
+    projectorAvailable: Boolean; // 🆕 new
+    photographyService: Boolean; // 🆕 new
+  },
+  villaDetails: {
+    floors: number;
+    bedrooms: number;
+    bathrooms: number;
+    privatePool: Boolean;
+    kitchenType: String;
+    // enum: ["open", "closed", "shared"];
+    maidService: Boolean;
+    gardenArea: Boolean; // 🆕 new
+    gymAccess: Boolean; // 🆕 new
+  },
   // booking: Partial<BookingTypes>,
   vendorId: string
 ) => {
@@ -42,8 +67,16 @@ export const AddBooking = async (
         endTime,
         totalGuest,
         message,
-        email,
+        contactNumber,
         userId,
+        type,
+        paymentStatus,
+        advancePaid,
+        totalPrice,
+        specialRequests,
+        farmHouseDetails,
+        banquetDetails,
+        villaDetails,
         vendorId,
         status: "pending",
       },

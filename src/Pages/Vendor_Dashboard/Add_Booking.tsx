@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  AddBooking,
-  GetBooking,
-  // GetSpecificBooking,
-} from "../../Api/Booking_Api";
+import { AddBooking, GetBooking } from "../../Api/Booking_Api";
 import { useAppDispatch } from "../../store/hooks";
 import { getProductThunk } from "../../store/productSlice";
 import { BookingTypes, ProductTypes } from "../../Types/types";
+import {
+  Banquet_Checkbox,
+  Banquet_Input,
+  Farm_House_Checkbox,
+  Farm_House_Input,
+  Villas_Checkbox,
+  Villas_Input,
+} from "./check_boxes";
 
 const Add_Booking = () => {
-  // const { id } = useParams();
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [bookedDates, setBookedDates] = useState<Date[]>([]); // Track booked dates
-  // const [userBookedProducts] = useState<string[]>([]); // Store user booked products
-  // const [bookingStatus, setBookingStatus] = useState<string | null>(null);
   const [products, setProducts] = useState<ProductTypes[]>([]);
   const [, setBookingDate] = useState<string>("");
   // Form to add booking
@@ -27,11 +26,58 @@ const Add_Booking = () => {
   const [endTime, setEndTime] = useState("");
   const [totalGuest, settotalGuest] = useState("");
   const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<{
     productId: string;
     vendorId: string;
   } | null>(null);
+  const [type, setType] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("unpaid");
+  const [advancePaid, setAdvancePaid] = useState<number>();
+  const [totalPrice, setTotalPrice] = useState<number>();
+  const [specialRequests, setSpecialRequests] = useState("");
+  // Farm House Details and Checkboxes
+  const [farmHouseDetails, setFarmHouseDetails] = useState({
+    poolAccess: false,
+    overnightStay: false,
+    catering: false,
+    numberOfRooms: 0,
+    numberOfBeds: 0,
+    kitchen: false,
+    parking: false,
+    wifi: false,
+    generator: false,
+    security: false,
+    barbecueArea: false,
+    playArea: false,
+  });
+  // Banquet Details and Checkboxes
+  const [banquetDetails, setBanquetDetails] = useState({
+    guestCapacity: 0,
+    cateringService: false,
+    // menuTypes: ""
+    inHouseDecoration: false,
+    stageAvailable: false,
+    djMusic: false,
+    valetParking: false,
+    changingRoom: false,
+    // eventTypesAllowed: String;
+    acAvailable: false,
+    projectorAvailable: false, // 🆕 new
+    photographyService: false, // 🆕 new
+  });
+  // Villas Details and Checkboxes
+  const [villas, setVillas] = useState({
+    floors: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    privatePool: false,
+    kitchenType: "open",
+    // enum: ["open", "closed", "shared"];
+    maidService: false,
+    gardenArea: false, // 🆕 new
+    gymAccess: false,
+  });
 
   const dispatch = useAppDispatch();
   const userString = localStorage.getItem("user");
@@ -110,7 +156,7 @@ const Add_Booking = () => {
       !startTime ||
       !endTime ||
       !totalGuest ||
-      !email ||
+      !contactNumber ||
       !selectedProduct
     ) {
       toast.error("Please fill all required fields");
@@ -125,10 +171,18 @@ const Add_Booking = () => {
         name,
         startTime,
         endTime,
-        totalGuest,
+        Number(totalGuest),
         message,
-        email,
+        Number(contactNumber),
+        type,
         currentVendorId,
+        paymentStatus,
+        Number(advancePaid),
+        Number(totalPrice),
+        specialRequests,
+        farmHouseDetails,
+        banquetDetails,
+        villas,
         selectedProduct.vendorId
       );
       console.log(response);
@@ -141,8 +195,49 @@ const Add_Booking = () => {
       setEndTime("");
       settotalGuest("");
       setMessage("");
-      setEmail("");
+      setContactNumber("");
       setSelectedProduct(null);
+      setPaymentStatus("");
+      setAdvancePaid(0);
+      setTotalPrice(0);
+      setSpecialRequests("");
+      setFarmHouseDetails({
+        poolAccess: false,
+        overnightStay: false,
+        catering: false,
+        numberOfRooms: 0,
+        numberOfBeds: 0,
+        kitchen: false,
+        parking: false,
+        wifi: false,
+        generator: false,
+        security: false,
+        barbecueArea: false,
+        playArea: false,
+      });
+      setBanquetDetails({
+        guestCapacity: 0,
+        cateringService: false,
+        inHouseDecoration: false,
+        stageAvailable: false,
+        djMusic: false,
+        valetParking: false,
+        changingRoom: false,
+        acAvailable: false,
+        projectorAvailable: false, // 🆕 new
+        photographyService: false, // 🆕 new
+      });
+      setVillas({
+        floors: 0,
+        bedrooms: 0,
+        bathrooms: 0,
+        privatePool: false,
+        kitchenType: "open",
+        maidService: false,
+        gardenArea: false, // 🆕 new
+        gymAccess: false,
+      });
+      setType("");
     } catch (error: any) {
       console.error("Booking error:", error);
       toast.error(error.response?.data?.message || "Failed to submit booking");
@@ -188,6 +283,15 @@ const Add_Booking = () => {
                 className="w-full border-[1.5px] border-black rounded-lg p-2"
                 required
               />
+              <select
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="">Select Type</option>
+                <option value="farm house">Farm House</option>
+                <option value="banquet">Banquet</option>
+                <option value="villas">Villas</option>
+              </select>
               <div className="flex items-center border-[1.5px] border-black rounded-lg p-2 bg-white shadow-sm">
                 <select
                   className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -277,13 +381,212 @@ const Add_Booking = () => {
                 required
               ></textarea>
               <input
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="number"
+                placeholder="Your Number"
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
                 className="w-full border-[1.5px] border-black rounded-lg p-2"
                 required
               />
+              <input
+                type="number"
+                placeholder="Advance Paid"
+                value={advancePaid}
+                onChange={(e) => setAdvancePaid(Number(e.target.value))}
+                className="w-full border-[1.5px] border-black rounded-lg p-2"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Total Price"
+                value={totalPrice}
+                onChange={(e) => setTotalPrice(Number(e.target.value))}
+                className="w-full border-[1.5px] border-black rounded-lg p-2"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Special Requests"
+                value={specialRequests}
+                onChange={(e) => setSpecialRequests(e.target.value)}
+                className="w-full border-[1.5px] border-black rounded-lg p-2"
+                required
+              />
+              <select
+                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={(e) => setPaymentStatus(e.target.value)}
+                required
+              >
+                <option value="">Payment Status</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+                <option value="refund">Refund</option>
+                <option value="partial">Partial</option>
+              </select>
+              {/* Farm House CheckBox  */}
+              {type === "farm house" && (
+                <div className="space-y-4">
+                  {/* Checkboxes in a row */}
+                  <div className="flex flex-wrap gap-4">
+                    {Farm_House_Checkbox.map((val) => (
+                      <div key={val.id} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          checked={Boolean(
+                            farmHouseDetails[
+                              val.id as keyof typeof farmHouseDetails
+                            ]
+                          )}
+                          onChange={(e) =>
+                            setFarmHouseDetails({
+                              ...farmHouseDetails,
+                              [val.id]: e.target.checked,
+                            })
+                          }
+                        />
+                        <label className="text-sm text-gray-700">
+                          {val.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Number inputs in a column */}
+                  <div className="grid grid-cols-1 gap-4">
+                    {Farm_House_Input.map((value) => (
+                      <div key={value.id} className="flex flex-col">
+                        <label className="mb-1 text-sm font-medium text-gray-700">
+                          {value.label}
+                        </label>
+                        <input
+                          type="number"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          value={Number(
+                            farmHouseDetails[
+                              value.id as keyof typeof farmHouseDetails
+                            ]
+                          )}
+                          onChange={(e) =>
+                            setFarmHouseDetails({
+                              ...farmHouseDetails,
+                              [value.id]: Number(e.target.value),
+                            })
+                          }
+                          min="0"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Banquet CheckBox */}
+              {type === "banquet" && (
+                <div className="space-y-4">
+                  {/* Checkboxes in a row */}
+                  <div className="flex flex-wrap gap-4">
+                    {Banquet_Checkbox.map((val) => (
+                      <div key={val.id} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          checked={Boolean(
+                            banquetDetails[
+                              val.id as keyof typeof banquetDetails
+                            ]
+                          )}
+                          onChange={(e) =>
+                            setBanquetDetails({
+                              ...banquetDetails,
+                              [val.id]: e.target.checked,
+                            })
+                          }
+                        />
+                        <label className="text-sm text-gray-700">
+                          {val.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Banquet Input */}
+                  <div className="grid grid-cols-1 gap-4">
+                    {Banquet_Input.map((value) => (
+                      <div key={value.id} className="flex flex-col">
+                        <label className="mb-1 text-sm font-medium text-gray-700">
+                          {value.label}
+                        </label>
+                        <input
+                          type="number"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          value={Number(
+                            banquetDetails[
+                              value.id as keyof typeof banquetDetails
+                            ]
+                          )}
+                          onChange={(e) =>
+                            setBanquetDetails({
+                              ...banquetDetails,
+                              [value.id]: Number(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Villas CheckBox */}
+              {type === "villas" && (
+                <div className="space-y-4">
+                  {/* Checkboxes in a row */}
+                  <div className="flex flex-wrap gap-4">
+                    {Villas_Checkbox.map((val) => (
+                      <div key={val.id} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          checked={Boolean(
+                            villas[val.id as keyof typeof villas]
+                          )}
+                          onChange={(e) =>
+                            setVillas({
+                              ...villas,
+                              [val.id]: e.target.checked,
+                            })
+                          }
+                        />
+                        <label className="text-sm text-gray-700">
+                          {val.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Villas Input */}
+                  <div className="grid grid-cols-1 gap-4">
+                    {Villas_Input.map((value) => (
+                      <div key={value.id} className="flex flex-col">
+                        <label className="mb-1 text-sm font-medium text-gray-700">
+                          {value.label}
+                        </label>
+                        <input
+                          type="number"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          value={Number(
+                            villas[value.id as keyof typeof villas]
+                          )}
+                          onChange={(e) =>
+                            setVillas({
+                              ...villas,
+                              [value.id]: Number(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="mt-6 flex justify-center">
                 <button className="w-full bg-[#4f46e5] text-white py-2 rounded-lg font-bold hover:bg-pink-600">
