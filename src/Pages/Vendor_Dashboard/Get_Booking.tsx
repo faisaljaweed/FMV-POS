@@ -14,12 +14,17 @@ interface Booking {
   name: string;
   startTime: string;
   endTime: string;
+  type: string;
   totalGuest: number;
   message: string;
-  email: string;
+  contactNumber: number;
   productId: string;
   userId: string;
   bookingDate: string;
+  paymentStatus: string;
+  advancePaid: number;
+  totalPrice: number;
+  specialRequests: string;
   status: string;
   isCancel: boolean;
   vendorId: string;
@@ -70,11 +75,11 @@ const Get_Booking = () => {
         GetBooking()
           .then((response) => {
             const allBookings = response?.data.data;
-
+            console.log(allBookings);
             const vendorBookings = allBookings.filter(
-              (booking: Booking) => booking.vendorId === currentVendorId
+              (booking: Booking) => booking.userId === currentVendorId
             );
-
+            // console.log(vendorBookings);
             setBookings(vendorBookings);
           })
           .catch((err) => {
@@ -86,11 +91,10 @@ const Get_Booking = () => {
     };
     getBooking();
   }, []);
-
   const filteredUsers = bookings.filter(
     (booking) =>
       booking.name.toLowerCase().includes(search.toLowerCase()) ||
-      booking.email.toLowerCase().includes(search.toLowerCase()) ||
+      // booking.contactNumber.includes(search.toLowerCase()) ||
       booking.bookingDate.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -155,7 +159,7 @@ const Get_Booking = () => {
                     {booking.name}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.email}
+                    {booking.contactNumber}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-900">
                     {booking.startTime}

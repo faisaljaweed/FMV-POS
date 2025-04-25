@@ -14,6 +14,7 @@ import {
   Villas_Checkbox,
   Villas_Input,
 } from "./check_boxes";
+import { Calendar } from "lucide-react";
 
 const Add_Booking = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -267,335 +268,435 @@ const Add_Booking = () => {
   }, [dispatch]);
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          {/* Booking Form */}
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-auto">
-            <div className="bg-[#4f46e5] text-white items-center text-center h-14 py-2 rounded-t-2xl font-bold">
-              Book Now
-            </div>
-            <form className="space-y-4 mt-4 " onSubmit={addBooking}>
-              <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              />
-              <select
-                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option value="">Select Type</option>
-                <option value="farm house">Farm House</option>
-                <option value="banquet">Banquet</option>
-                <option value="villas">Villas</option>
-              </select>
-              <div className="flex items-center border-[1.5px] border-black rounded-lg p-2 bg-white shadow-sm">
-                <select
-                  className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  onChange={(e) => {
-                    const selected = JSON.parse(e.target.value);
-                    setSelectedProduct({
-                      productId: selected.id,
-                      vendorId: selected.vendorId,
-                    });
-                  }}
-                  required
-                >
-                  <option value="">Select Venue</option>
-                  {products.map((product, index) => (
-                    <option
-                      key={index}
-                      value={JSON.stringify({
-                        id: product._id,
-                        vendorId: product.vendorId,
-                      })}
-                    >
-                      {product.VenuName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center  border-[1.5px] border-black rounded-lg p-2">
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date: Date | null) => {
-                    setStartDate(date);
-                    setBookingDate(date ? date.toISOString() : "");
-                  }}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={startDate}
-                  placeholderText="Start Date"
-                  className="w-full outline-none "
-                  minDate={new Date()}
-                  excludeDates={bookedDates} // Disable booked dates
-                />
-              </div>
-              <div className="flex gap-2">
-                <select
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full rounded-lg p-2 border-[1.5px] border-black"
-                  required
-                >
-                  <option value="">Starts</option>
-                  {timeSlots.map((time, index) => (
-                    <option key={index} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
+      <div className="py-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          Add New Booking
+        </h1>
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-6">
+            <form onSubmit={addBooking}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Customer Name */}
 
-                <select
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full border-[1.5px] border-black rounded-lg p-2"
-                  required
-                >
-                  <option value="">Ends</option>
-                  {timeSlots.map((time, index) => (
-                    <option key={index} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center border-[1.5px] border-black rounded-lg p-2">
-                <input
-                  type="number"
-                  placeholder="totalGuest"
-                  value={totalGuest}
-                  onChange={(e) => settotalGuest(e.target.value)}
-                  className="w-full outline-none"
-                  required
-                />
-              </div>
-              <textarea
-                placeholder="Message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              ></textarea>
-              <input
-                type="number"
-                placeholder="Your Number"
-                value={contactNumber}
-                onChange={(e) => setContactNumber(e.target.value)}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Advance Paid"
-                value={advancePaid}
-                onChange={(e) => setAdvancePaid(Number(e.target.value))}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Total Price"
-                value={totalPrice}
-                onChange={(e) => setTotalPrice(Number(e.target.value))}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Special Requests"
-                value={specialRequests}
-                onChange={(e) => setSpecialRequests(e.target.value)}
-                className="w-full border-[1.5px] border-black rounded-lg p-2"
-                required
-              />
-              <select
-                className="w-full p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onChange={(e) => setPaymentStatus(e.target.value)}
-                required
-              >
-                <option value="">Payment Status</option>
-                <option value="paid">Paid</option>
-                <option value="unpaid">Unpaid</option>
-                <option value="refund">Refund</option>
-                <option value="partial">Partial</option>
-              </select>
-              {/* Farm House CheckBox  */}
-              {type === "farm house" && (
-                <div className="space-y-4">
-                  {/* Checkboxes in a row */}
-                  <div className="flex flex-wrap gap-4">
-                    {Farm_House_Checkbox.map((val) => (
-                      <div key={val.id} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          checked={Boolean(
-                            farmHouseDetails[
-                              val.id as keyof typeof farmHouseDetails
-                            ]
-                          )}
-                          onChange={(e) =>
-                            setFarmHouseDetails({
-                              ...farmHouseDetails,
-                              [val.id]: e.target.checked,
-                            })
-                          }
-                        />
-                        <label className="text-sm text-gray-700">
-                          {val.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Number inputs in a column */}
-                  <div className="grid grid-cols-1 gap-4">
-                    {Farm_House_Input.map((value) => (
-                      <div key={value.id} className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium text-gray-700">
-                          {value.label}
-                        </label>
-                        <input
-                          type="number"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          value={Number(
-                            farmHouseDetails[
-                              value.id as keyof typeof farmHouseDetails
-                            ]
-                          )}
-                          onChange={(e) =>
-                            setFarmHouseDetails({
-                              ...farmHouseDetails,
-                              [value.id]: Number(e.target.value),
-                            })
-                          }
-                          min="0"
-                        />
-                      </div>
-                    ))}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Customer Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
                   </div>
                 </div>
-              )}
-              {/* Banquet CheckBox */}
-              {type === "banquet" && (
-                <div className="space-y-4">
-                  {/* Checkboxes in a row */}
-                  <div className="flex flex-wrap gap-4">
-                    {Banquet_Checkbox.map((val) => (
-                      <div key={val.id} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          checked={Boolean(
-                            banquetDetails[
-                              val.id as keyof typeof banquetDetails
-                            ]
-                          )}
-                          onChange={(e) =>
-                            setBanquetDetails({
-                              ...banquetDetails,
-                              [val.id]: e.target.checked,
-                            })
-                          }
-                        />
-                        <label className="text-sm text-gray-700">
-                          {val.label}
-                        </label>
-                      </div>
+                {/* Service Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Service Type
+                  </label>
+                  <select
+                    name="serviceType"
+                    onChange={(e) => setType(e.target.value)}
+                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                    required
+                  >
+                    <option value="">Select Type</option>
+                    <option value="farm house">Farm House</option>
+                    <option value="banquet">Banquet</option>
+                    <option value="villas">Villas</option>
+                  </select>
+                </div>
+                {/* Select Product */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product
+                  </label>
+                  <select
+                    name="serviceType"
+                    onChange={(e) => {
+                      const selected = JSON.parse(e.target.value);
+                      setSelectedProduct({
+                        productId: selected.id,
+                        vendorId: selected.vendorId,
+                      });
+                    }}
+                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                    required
+                  >
+                    <option value="">Select Venue</option>
+                    {products.map((product, index) => (
+                      <option
+                        key={index}
+                        value={JSON.stringify({
+                          id: product._id,
+                          vendorId: product.vendorId,
+                        })}
+                      >
+                        {product.VenuName}
+                      </option>
                     ))}
-                  </div>
-                  {/* Banquet Input */}
-                  <div className="grid grid-cols-1 gap-4">
-                    {Banquet_Input.map((value) => (
-                      <div key={value.id} className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium text-gray-700">
-                          {value.label}
-                        </label>
-                        <input
-                          type="number"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          value={Number(
-                            banquetDetails[
-                              value.id as keyof typeof banquetDetails
-                            ]
-                          )}
-                          onChange={(e) =>
-                            setBanquetDetails({
-                              ...banquetDetails,
-                              [value.id]: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                    ))}
+                  </select>
+                </div>
+                {/* Date Pick */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <DatePicker
+                      selected={startDate}
+                      onChange={(date: Date | null) => {
+                        setStartDate(date);
+                        setBookingDate(date ? date.toISOString() : "");
+                      }}
+                      selectsStart
+                      startDate={startDate}
+                      endDate={startDate}
+                      placeholderText="Start Date"
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      minDate={new Date()}
+                      excludeDates={bookedDates} // Disable booked dates
+                    />
                   </div>
                 </div>
-              )}
-              {/* Villas CheckBox */}
-              {type === "villas" && (
-                <div className="space-y-4">
-                  {/* Checkboxes in a row */}
-                  <div className="flex flex-wrap gap-4">
-                    {Villas_Checkbox.map((val) => (
-                      <div key={val.id} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          checked={Boolean(
-                            villas[val.id as keyof typeof villas]
-                          )}
-                          onChange={(e) =>
-                            setVillas({
-                              ...villas,
-                              [val.id]: e.target.checked,
-                            })
-                          }
-                        />
-                        <label className="text-sm text-gray-700">
-                          {val.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
 
-                  {/* Villas Input */}
-                  <div className="grid grid-cols-1 gap-4">
-                    {Villas_Input.map((value) => (
-                      <div key={value.id} className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium text-gray-700">
-                          {value.label}
-                        </label>
-                        <input
-                          type="number"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          value={Number(
-                            villas[value.id as keyof typeof villas]
-                          )}
-                          onChange={(e) =>
-                            setVillas({
-                              ...villas,
-                              [value.id]: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
+                {/* Start Time  */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Time
+                  </label>
+                  <select
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                    required
+                  >
+                    <option value="">Starts</option>
+                    {timeSlots.map((time, index) => (
+                      <option key={index} value={time}>
+                        {time}
+                      </option>
                     ))}
+                  </select>
+                </div>
+                {/* End Time */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    End Time
+                  </label>
+                  <select
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                    required
+                  >
+                    <option value="">Ends</option>
+                    {timeSlots.map((time, index) => (
+                      <option key={index} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* total Guest */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Total Guest
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="totalGuest"
+                      value={totalGuest}
+                      onChange={(e) => settotalGuest(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
                   </div>
                 </div>
-              )}
+                {/* Message */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Message
+                  </label>
+                  <div className="relative">
+                    <textarea
+                      placeholder="Message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Number */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Contact Number
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="Your Number"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Advance Paid */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Advance Paid
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="Advance Paid"
+                      value={advancePaid}
+                      onChange={(e) => setAdvancePaid(Number(e.target.value))}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Total Price */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Total Price
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="Total Price"
+                      value={totalPrice}
+                      onChange={(e) => setTotalPrice(Number(e.target.value))}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Special Request */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Special Request
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Special Requests"
+                      value={specialRequests}
+                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Payment Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Payment Status
+                  </label>
+                  <select
+                    className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                    onChange={(e) => setPaymentStatus(e.target.value)}
+                    required
+                  >
+                    <option value="">Payment Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="refund">Refund</option>
+                    <option value="partial">Partial</option>
+                  </select>
+                </div>
+                {/* Farm House CheckBox  */}
+                {type === "farm house" && (
+                  <div className="space-y-4">
+                    {/* Checkboxes in a row */}
+                    <div className="flex flex-wrap gap-4">
+                      {Farm_House_Checkbox.map((val) => (
+                        <div key={val.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            checked={Boolean(
+                              farmHouseDetails[
+                                val.id as keyof typeof farmHouseDetails
+                              ]
+                            )}
+                            onChange={(e) =>
+                              setFarmHouseDetails({
+                                ...farmHouseDetails,
+                                [val.id]: e.target.checked,
+                              })
+                            }
+                          />
+                          <label className="text-sm text-gray-700">
+                            {val.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Farm House inputs  */}
+                    <div className="grid grid-cols-1 gap-4">
+                      {Farm_House_Input.map((value) => (
+                        <div key={value.id} className="flex flex-col">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {value.label}
+                          </label>
+                          <input
+                            type="number"
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                            value={Number(
+                              farmHouseDetails[
+                                value.id as keyof typeof farmHouseDetails
+                              ]
+                            )}
+                            onChange={(e) =>
+                              setFarmHouseDetails({
+                                ...farmHouseDetails,
+                                [value.id]: Number(e.target.value),
+                              })
+                            }
+                            min="0"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Banquet CheckBox */}
+                {type === "banquet" && (
+                  <div className="space-y-4">
+                    {/* Checkboxes in a row */}
+                    <div className="flex flex-wrap gap-4">
+                      {Banquet_Checkbox.map((val) => (
+                        <div key={val.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            checked={Boolean(
+                              banquetDetails[
+                                val.id as keyof typeof banquetDetails
+                              ]
+                            )}
+                            onChange={(e) =>
+                              setBanquetDetails({
+                                ...banquetDetails,
+                                [val.id]: e.target.checked,
+                              })
+                            }
+                          />
+                          <label className="text-sm text-gray-700">
+                            {val.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Benquet Input */}
+                    <div className="grid grid-cols-1 gap-4">
+                      {Banquet_Input.map((value) => (
+                        <div key={value.id} className="flex flex-col">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {value.label}
+                          </label>
+                          <input
+                            type="number"
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                            value={Number(
+                              banquetDetails[
+                                value.id as keyof typeof banquetDetails
+                              ]
+                            )}
+                            onChange={(e) =>
+                              setBanquetDetails({
+                                ...banquetDetails,
+                                [value.id]: Number(e.target.value),
+                              })
+                            }
+                            min="0"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Villas CheckBox */}
+                {type === "villas" && (
+                  <div className="space-y-4">
+                    {/* Checkboxes in a row */}
+                    <div className="flex flex-wrap gap-4">
+                      {Villas_Checkbox.map((val) => (
+                        <div key={val.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            checked={Boolean(
+                              villas[val.id as keyof typeof villas]
+                            )}
+                            onChange={(e) =>
+                              setVillas({
+                                ...villas,
+                                [val.id]: e.target.checked,
+                              })
+                            }
+                          />
+                          <label className="text-sm text-gray-700">
+                            {val.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      {Villas_Input.map((value) => (
+                        <div key={value.id} className="flex flex-col">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {value.label}
+                          </label>
+                          <input
+                            type="number"
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+                            value={Number(
+                              villas[value.id as keyof typeof villas]
+                            )}
+                            onChange={(e) =>
+                              setVillas({
+                                ...villas,
+                                [value.id]: Number(e.target.value),
+                              })
+                            }
+                            min="0"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-              <div className="mt-6 flex justify-center">
-                <button className="w-full bg-[#4f46e5] text-white py-2 rounded-lg font-bold hover:bg-pink-600">
-                  Book Now
-                </button>
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    className="mr-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 flex items-center"
+                  >
+                    Create Booking
+                  </button>
+                </div>
               </div>
-              <p className="text-center text-gray-500 text-sm">
-                © Venue Will Respond Shortly
-              </p>
             </form>
           </div>
         </div>

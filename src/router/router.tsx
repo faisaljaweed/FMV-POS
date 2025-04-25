@@ -8,7 +8,7 @@ import Signup from "../Signup";
 import AdminDashboard from "../Pages/Admin_Dashboard/Admin_Dashboard";
 import Add_Vendor from "../Pages/Admin_Dashboard/Add_Vendor";
 // import Home from "../Pages/Admin_Dashboard/Home";
-import Homes from "../Pages/Vendor_Dashboard/Home";
+// import Homes from "../Pages/Vendor_Dashboard/Home";
 import Get_Booking from "../Pages/Admin_Dashboard/Get_Booking";
 import Get_Vendor from "../Pages/Admin_Dashboard/Get_Vendor";
 import Get_Product from "../Pages/Admin_Dashboard/Get_Product";
@@ -38,7 +38,7 @@ export const router = createBrowserRouter(
           <Route path="add-product" element={<Add_Product />} />
           <Route path="get-booking" element={<GetBooking />} />
           <Route path="get-product" element={<GetProduct />} />
-          <Route path="home" element={<Homes />} />
+          {/* <Route path="home" element={<Homes />} /> */}
         </Route>
       </Route>
     </Route>

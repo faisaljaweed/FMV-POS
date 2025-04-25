@@ -5,6 +5,7 @@ import Loader from "./Components/Loader";
 import { useAppSelector } from "./store/hooks";
 import { selectApiCallInProgress } from "./store/userSlice";
 import { selectProductApiCallInProgress } from "./store/productSlice";
+import { DashboardProvider } from "../src/context/DashboardContext";
 
 function App() {
   const userLoading = useAppSelector(selectApiCallInProgress);
@@ -14,12 +15,14 @@ function App() {
 
   return (
     <>
-      {isLoading && (
-        <div className="z-20 fixed w-screen h-screen flex items-center justify-center bg-black/75">
-          <Loader />
-        </div>
-      )}
-      <RouterProvider router={router} />
+      <DashboardProvider>
+        {isLoading && (
+          <div className="z-20 fixed w-screen h-screen flex items-center justify-center bg-black/75">
+            <Loader />
+          </div>
+        )}
+        <RouterProvider router={router} />
+      </DashboardProvider>
     </>
   );
 }
