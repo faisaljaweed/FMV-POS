@@ -6,7 +6,7 @@ export const LoginUser = async (credentials: {
 }) => {
   try {
     const response = await axios.post(
-      `https://fmv-pos-backend.vercel.app/api/v1/user/login`,
+      `http://localhost:3000/api/v1/user/login`,
       credentials
       // {
       //   withCredentials: true,
@@ -21,7 +21,7 @@ export const LoginUser = async (credentials: {
 export const Register = async (user: Partial<UserTypes>) => {
   try {
     const response = await axios.post(
-      `https://fmv-pos-backend.vercel.app/api/v1/user/sigup`,
+      `http://localhost:3000/api/v1/user/sigup`,
       user
     );
     return response.data;
@@ -33,7 +33,7 @@ export const Register = async (user: Partial<UserTypes>) => {
 export const Logout = async () => {
   try {
     const response = await axios.post(
-      `https://fmv-pos-backend.vercel.app/api/v1/user/logout`,
+      `http://localhost:3000/api/v1/user/logout`,
       {},
       {
         headers: {
@@ -50,7 +50,7 @@ export const Logout = async () => {
 export const GetUser = async () => {
   try {
     const response = await axios.get(
-      `https://fmv-pos-backend.vercel.app/api/v1/user/get-user`,
+      `http://localhost:3000/api/v1/user/get-user`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -66,7 +66,7 @@ export const GetUser = async () => {
 export const DeleteUser = async (id: string) => {
   try {
     const response = await axios.delete(
-      `https://fmv-pos-backend.vercel.app/api/v1/user/delete-user/${id}`,
+      `http://localhost:3000/api/v1/user/delete-user/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

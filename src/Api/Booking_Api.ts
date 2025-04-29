@@ -58,7 +58,7 @@ export const AddBooking = async (
 ) => {
   try {
     const response = await axios.post(
-      `https://fmv-pos-backend.vercel.app/api/v1/booking/add-booking`,
+      `http://localhost:3000/api/v1/booking/add-booking`,
       {
         bookingDate,
         productId,
@@ -96,7 +96,7 @@ export const AddBooking = async (
 export const GetBooking = async () => {
   try {
     const response = await axios.get(
-      `https://fmv-pos-backend.vercel.app/api/v1/booking/get-user-bookings`,
+      `http://localhost:3000/api/v1/booking/get-user-bookings`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -112,7 +112,7 @@ export const GetBooking = async () => {
 export const UpdateBooking = async (id: string, data: { status: string }) => {
   try {
     const response = await axios.put(
-      `https://fmv-pos-backend.vercel.app/api/v1/booking/update-booking/${id}`,
+      `http://localhost:3000/api/v1/booking/update-booking/${id}`,
       data,
       {
         headers: {
@@ -129,7 +129,7 @@ export const UpdateBooking = async (id: string, data: { status: string }) => {
 export const DeleteBooking = async (id: any) => {
   try {
     const response = await axios.delete(
-      `https://fmv-pos-backend.vercel.app/api/v1/booking/delete-booking/${id}`,
+      `http://localhost:3000/api/v1/booking/delete-booking/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -145,7 +145,7 @@ export const DeleteBooking = async (id: any) => {
 export const GetSpecificBooking = async (id: string) => {
   try {
     const response = await axios.get(
-      `https://fmv-pos-backend.vercel.app/api/v1/booking/get-specific-booking/${id}`,
+      `http://localhost:3000/api/v1/booking/get-specific-booking/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

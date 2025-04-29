@@ -1,14 +1,28 @@
 import { useEffect, useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import { GetBooking, UpdateBooking } from "../../Api/Booking_Api";
 import {
   Box,
   Button,
-  MenuItem,
   Modal,
   Select,
+  MenuItem,
   SelectChangeEvent,
+  TextField,
+  InputAdornment,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Typography,
+  Avatar,
+  Paper,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import { GetBooking, UpdateBooking } from "../../Api/Booking_Api";
+
 interface Booking {
   _id: string;
   name: string;
@@ -33,11 +47,32 @@ interface Booking {
 
 const Get_Booking = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [error] = useState(null);
   const [search, setSearch] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const userString = localStorage.getItem("user");
+      const currentUser = userString ? JSON.parse(userString) : null;
+      const currentVendorId = currentUser ? currentUser._id : null;
+
+      try {
+        const response = await GetBooking();
+        const allBookings = response?.data.data;
+        const vendorBookings = allBookings.filter(
+          (booking: Booking) => booking.userId === currentVendorId
+        );
+        setBookings(vendorBookings);
+      } catch (error) {
+        console.log("Error fetching bookings:", error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const handleEdit = (booking: Booking) => {
     setSelectedBooking(booking);
@@ -49,199 +84,209 @@ const Get_Booking = () => {
     setStatus(event.target.value);
   };
 
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    setStatusFilter(event.target.value);
+  };
+
   const handleUpdateStatus = async () => {
     if (!selectedBooking) return;
     try {
       const response = await UpdateBooking(selectedBooking._id, { status });
-
       if (response?.data.success) {
-        const updatedBookings = bookings.map((booking) =>
-          booking._id === selectedBooking._id ? { ...booking, status } : booking
+        setBookings((prev) =>
+          prev.map((booking) =>
+            booking._id === selectedBooking._id
+              ? { ...booking, status }
+              : booking
+          )
         );
-        setBookings(updatedBookings);
         setModalOpen(false);
       }
     } catch (error) {
       console.log("Error updating status:", error);
     }
   };
-  useEffect(() => {
-    const getBooking = async () => {
-      const userString = localStorage.getItem("user");
-      const currentUser = userString ? JSON.parse(userString) : null;
-      const currentVendorId = currentUser ? currentUser._id : null;
 
-      try {
-        GetBooking()
-          .then((response) => {
-            const allBookings = response?.data.data;
-            console.log(allBookings);
-            const vendorBookings = allBookings.filter(
-              (booking: Booking) => booking.userId === currentVendorId
-            );
-            // console.log(vendorBookings);
-            setBookings(vendorBookings);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getBooking();
-  }, []);
-  const filteredUsers = bookings.filter(
-    (booking) =>
-      booking.name.toLowerCase().includes(search.toLowerCase()) ||
-      // booking.contactNumber.includes(search.toLowerCase()) ||
-      booking.bookingDate.toLowerCase().includes(search.toLowerCase())
-  );
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "#D1FAE5";
+      case "pending":
+        return "#FEF3C7";
+      case "cancelled":
+        return "#DBEAFE";
+      default:
+        return "#F3F4F6";
+    }
+  };
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-xl">{error}</p>
-      </div>
-    );
-  }
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch = booking.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || booking.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("default", { month: "short" }); // e.g. May
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-          Check Booking Details
-        </h1>
-        <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-          <SearchIcon className="text-gray-400 mr-2" aria-hidden="true" />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 outline-none"
-          />
-        </div>
-        <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Start Time
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  End Time
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Guests
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Booking Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((booking) => (
-                <tr key={booking._id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.name}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.contactNumber}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.startTime}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.endTime}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.totalGuest}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {new Date(booking.bookingDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        booking.status === "approved"
-                          ? "bg-green-100 text-green-800"
-                          : booking.status === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <button
-                      onClick={() => handleEdit(booking)}
-                      className="px-3 py-1 text-xs font-semibold rounded bg-red-500 text-white hover:bg-red-600 transition duration-200"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <Modal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          aria-labelledby="edit-status-modal"
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Bookings
+      </Typography>
+
+      <Paper sx={{ p: 2, mb: 4, display: "flex", gap: 2, flexWrap: "wrap" }}>
+        <TextField
+          placeholder="Search bookings..."
+          variant="outlined"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Select
+          value={statusFilter}
+          size="small"
+          displayEmpty
+          onChange={handleFilterChange}
+          startAdornment={<FilterAltIcon sx={{ mr: 1 }} />}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "90%",
-              maxWidth: 400,
-              bgcolor: "background.paper",
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 2,
-            }}
+          <MenuItem value="all">All Statuses</MenuItem>
+          <MenuItem value="approved">Approved</MenuItem>
+          <MenuItem value="pending">Pending</MenuItem>
+          <MenuItem value="cancelled">Cancelled</MenuItem>
+        </Select>
+      </Paper>
+
+      <Paper>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
+            <TableRow>
+              <TableCell>Customer</TableCell>
+              <TableCell>Date & Time</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Guests</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredBookings.length > 0 ? (
+              filteredBookings.map((booking) => (
+                <TableRow key={booking._id} hover>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Avatar sx={{ bgcolor: "teal", mr: 2 }}>
+                        {booking.name.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography fontWeight={500}>{booking.name}</Typography>
+                        <Typography variant="caption">
+                          ID: {booking._id.slice(-6)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {formatDate(booking.bookingDate)}
+                    </Typography>
+                    <Typography variant="caption">
+                      {booking.startTime} - {booking.endTime}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{booking.type}</TableCell>
+                  <TableCell>{booking.totalGuest}</TableCell>
+                  <TableCell>
+                    <Box
+                      px={1}
+                      py={0.5}
+                      borderRadius={2}
+                      bgcolor={getStatusColor(booking.status)}
+                      display="inline-block"
+                    >
+                      <Typography variant="caption" fontWeight="bold">
+                        {booking.status.charAt(0).toUpperCase() +
+                          booking.status.slice(1)}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => handleEdit(booking)}
+                    >
+                      <EditIcon fontSize="small" />
+                    </Button>
+                    <Button size="small" color="error">
+                      <DeleteIcon fontSize="small" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No bookings found matching your criteria
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Paper>
+
+      {/* Status Edit Modal */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <Box
+          sx={{
+            width: 400,
+            p: 4,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            mx: "auto",
+            my: "20vh",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Update Booking Status
+          </Typography>
+          <Select
+            fullWidth
+            value={status}
+            onChange={handleStatusChange}
+            sx={{ mb: 2 }}
           >
-            <h2>Update Booking Status</h2>
-            <Select
-              value={status}
-              onChange={handleStatusChange}
-              fullWidth
-              sx={{ mt: 2 }}
-            >
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="cancelled">Rejected</MenuItem>
-            </Select>
-            <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleUpdateStatus}
-              >
-                Update
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
-      </div>
-    </div>
+            <MenuItem value="cancelled">Cancelled</MenuItem>
+            <MenuItem value="pending">Pending</MenuItem>
+            <MenuItem value="approved">Approved</MenuItem>
+          </Select>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUpdateStatus}
+          >
+            Update
+          </Button>
+        </Box>
+      </Modal>
+    </Box>
   );
 };
 

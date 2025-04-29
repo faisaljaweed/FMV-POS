@@ -4,7 +4,7 @@ import { ProductTypes } from "../Types/types";
 export const CreateProduct = async (formData: FormData) => {
   try {
     const response = await axios.post(
-      `https://fmv-pos-backend.vercel.app/api/v1/product/create-product`,
+      `http://localhost:3000/api/v1/product/create-product`,
       formData,
       {
         headers: {
@@ -21,7 +21,7 @@ export const CreateProduct = async (formData: FormData) => {
 export const GetAllProduct = async () => {
   try {
     const response = await axios.get(
-      `https://fmv-pos-backend.vercel.app/api/v1/product/get-all-product`,
+      `http://localhost:3000/api/v1/product/get-all-product`,
       {
         headers: {
           Authorization: `Beare ${localStorage.getItem("accessToken")}`,
@@ -37,7 +37,7 @@ export const GetAllProduct = async () => {
 export const GetProductById = async (id: any) => {
   try {
     const response = await axios.get(
-      `https://fmv-pos-backend.vercel.app/api/v1/product/get-product/${id}`,
+      `http://localhost:3000/api/v1/product/get-product/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -59,7 +59,7 @@ export const EditProduct = async ({
 }) => {
   try {
     const response = await axios.put(
-      `https://fmv-pos-backend.vercel.app/api/v1/product/update-product/${id}`,
+      `http://localhost:3000/api/v1/product/update-product/${id}`,
       {
         updateProduct,
       },
@@ -78,7 +78,7 @@ export const EditProduct = async ({
 export const DeleteProduct = async (id: any) => {
   try {
     const response = await axios.delete(
-      `https://fmv-pos-backend.vercel.app/api/v1/product/delete-product/${id}`,
+      `http://localhost:3000/api/v1/product/delete-product/${id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
