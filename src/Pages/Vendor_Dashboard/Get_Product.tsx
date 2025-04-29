@@ -53,10 +53,10 @@ const Get_Product = () => {
       });
   }, [dispatch]);
 
-  const handleEdit = (product: ProductTypes) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
+  // const handleEdit = (product: ProductTypes) => {
+  //   setSelectedProduct(product);
+  //   setIsModalOpen(true);
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 py-8">
@@ -173,7 +173,7 @@ const Get_Product = () => {
                   <div className="flex justify-end">
                     <CustomButton
                       type="button"
-                      onClick={() => handleEdit(product)}
+                      // onClick={() => handleEdit(product)}
                       className="flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-300"
                     >
                       Edit

@@ -7,6 +7,19 @@ import {
   selectUserList,
 } from "../../store/userSlice";
 import { toast } from "react-toastify";
+import {
+  Avatar,
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Get_Vendor = () => {
   const [search, setSearch] = useState<string>("");
@@ -34,72 +47,76 @@ const Get_Vendor = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-          Get User
-        </h1>
-        <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-          <SearchIcon className="text-gray-400 mr-2" aria-hidden="true" />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 outline-none"
-          />
-        </div>
-        <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created at
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((booking) => (
-                <tr key={booking._id}>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {booking.username || "N/A"}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {booking.email || "N/A"}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {booking.role || "N/A"}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(booking.createdAt).toLocaleDateString() || "N/A"}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <button
-                      onClick={() => handleDelete(booking._id)}
-                      className="px-3 py-1 text-xs font-semibold rounded bg-red-500 text-white hover:bg-red-600 transition duration-200"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Bookings
+      </Typography>
+
+      <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
+        <SearchIcon className="text-gray-400 mr-2" aria-hidden="true" />
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-2 outline-none"
+        />
       </div>
-    </div>
+      <Paper>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
+            <TableRow>
+              <TableCell>UserName</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>CreatedAt</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((booking) => (
+                <TableRow key={booking._id} hover>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Avatar sx={{ bgcolor: "teal", mr: 2 }}>
+                        {booking.username.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography fontWeight={500}>
+                          {booking.username}
+                        </Typography>
+                        <Typography variant="caption">
+                          ID: {booking._id.slice(-6)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{booking.email}</TableCell>
+                  <TableCell>{booking.role}</TableCell>
+                  <TableCell>{booking.createdAt}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => handleDelete(booking._id)}
+                      size="small"
+                      color="error"
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No bookings found matching your criteria
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Paper>
+    </Box>
   );
 };
 

@@ -1,42 +1,36 @@
-import { toast } from "react-toastify";
-import CustomButton from "../../Components/Button";
-import { useAppDispatch } from "../../store/hooks";
-import { logoutUserThunk } from "../../store/userSlice";
-import Home from "./Home";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { useDashboard } from "../../context/DashboardContext";
+import { useEffect } from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 const AdminDashboard = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const { sidebarOpen, closeSidebar } = useDashboard();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    dispatch(logoutUserThunk())
-      .unwrap()
-      .then(() => {
-        navigate("/");
-        localStorage.clear();
-        toast.success(`Logout Successfully`);
-      })
-      .catch(() => {
-        toast.error(`Logout Failed`);
-      });
-  };
+  //   // Close sidebar on route change (mobile)
+  useEffect(() => {
+    closeSidebar();
+  }, [location.pathname, closeSidebar]);
+
   return (
-    <div className="flex w-full h-screen">
-      {/* Sidebar */}
-      <div className="w-[20%] lg:w-[15%] bg-gray-800 text-white p-4 flex flex-col items-center">
-        <Home />
-      </div>
-
-      {/* Main Content Area */}
-      <div className="w-[80%] lg:w-[85%] relative bg-[#f1f5f9] p-4 overflow-auto">
-        {/* Logout Button Top-Right */}
-        <div className="absolute top-4 right-4">
-          <CustomButton onClick={handleLogout}>Logout</CustomButton>
-        </div>
-
-        {/* Outlet for pages */}
-        <Outlet />
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/50 lg:hidden"
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
+      )}
+      <Sidebar />
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 w-full overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+        </main>
       </div>
     </div>
   );

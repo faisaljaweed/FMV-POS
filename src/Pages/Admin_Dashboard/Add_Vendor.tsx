@@ -1,5 +1,3 @@
-import Input from "../../Components/Input";
-import CustomButton from "../../Components/Button";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../store/hooks";
 import { registerUserThunk } from "../../store/userSlice";
@@ -45,78 +43,104 @@ const Add_Vendor = () => {
     }
   };
   return (
-    <div className="flex flex-col gap-4 p-4 w-full h-full bg-white rounded-lg shadow-md">
-      <h2 className="text-center text-xl font-extrabold text-gray-700">
-        Add Vendor
-      </h2>
-      <form
-        className="flex flex-col gap-4 w-full h-full"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <label htmlFor="username" className="block font-medium">
-            USERNAME
-          </label>
-          <Input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Enter your UserName"
-            required
-          />
+    <div className="py-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Add Vendor</h2>
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="p-6">
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  USERNAME
+                </label>
+                <input
+                  type="text"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  id="username"
+                  name="username"
+                  placeholder="Enter your UserName"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  EMAIL
+                </label>
+                <input
+                  id="email"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your Email"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Role
+                </label>
+                <input
+                  id="role"
+                  name="role"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  type="text"
+                  placeholder="Enter your Role"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  PASSWORD
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  type="password"
+                  placeholder="Enter your Password"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  CONFIRM PASSWORD
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  type="password"
+                  placeholder="Confirm your Password"
+                  required
+                />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                type="submit"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 flex items-center"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label htmlFor="email" className="block font-medium">
-            EMAIL
-          </label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your Email"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="role" className="block font-medium">
-            Role
-          </label>
-          <Input
-            id="role"
-            name="role"
-            type="text"
-            placeholder="Enter your Role"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block font-medium">
-            PASSWORD
-          </label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter your Password"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="confirmPassword" className="block font-medium">
-            CONFIRM PASSWORD
-          </label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm your Password"
-            required
-          />
-        </div>
-        <div>
-          <CustomButton type="submit">Submit</CustomButton>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

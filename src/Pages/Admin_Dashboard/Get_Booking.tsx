@@ -1,6 +1,25 @@
 import { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { DeleteBooking, GetBooking } from "../../Api/Booking_Api";
+import {
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  TextField,
+  InputAdornment,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Typography,
+  Avatar,
+  Paper,
+} from "@mui/material";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
 interface Booking {
   _id: string;
   name: string;
@@ -16,12 +35,18 @@ interface Booking {
   isCancel: boolean;
   vendorId: string;
   createdAt: string;
+  type: string; // Added the 'type' property
 }
 
 const Get_Booking = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [error] = useState(null);
   const [search, setSearch] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    setStatusFilter(event.target.value);
+  };
 
   useEffect(() => {
     const getBooking = async () => {
@@ -49,13 +74,14 @@ const Get_Booking = () => {
       .catch((err) => console.log(err));
   };
 
-  const filteredUsers = bookings.filter(
-    (booking) =>
-      booking.name.toLowerCase().includes(search.toLowerCase()) ||
-      booking.email.toLowerCase().includes(search.toLowerCase()) ||
-      booking.bookingDate.toLowerCase().includes(search.toLowerCase())
-  );
-
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch = booking.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || booking.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -63,102 +89,135 @@ const Get_Booking = () => {
       </div>
     );
   }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "#D1FAE5";
+      case "pending":
+        return "#FEF3C7";
+      case "cancelled":
+        return "#DBEAFE";
+      default:
+        return "#F3F4F6";
+    }
+  };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("default", { month: "short" }); // e.g. May
+    const year = date.getFullYear();
 
+    return `${day}-${month}-${year}`;
+  };
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-          Check Booking Details
-        </h1>
-        <div className="mb-4 flex items-center bg-white shadow-md rounded-lg p-2">
-          <SearchIcon className="text-gray-400 mr-2" aria-hidden="true" />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 outline-none"
-          />
-        </div>
-        <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Start Time
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  End Time
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Guests
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Booking Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((booking) => (
-                <tr key={booking._id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.name}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.email}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.startTime}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.endTime}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {booking.totalGuest}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-900">
-                    {new Date(booking.bookingDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        booking.status === "approved"
-                          ? "bg-green-100 text-green-800"
-                          : booking.status === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        Bookings
+      </Typography>
+
+      <Paper sx={{ p: 2, mb: 4, display: "flex", gap: 2, flexWrap: "wrap" }}>
+        <TextField
+          placeholder="Search bookings..."
+          variant="outlined"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Select
+          value={statusFilter}
+          size="small"
+          displayEmpty
+          onChange={handleFilterChange}
+          startAdornment={<FilterAltIcon sx={{ mr: 1 }} />}
+        >
+          <MenuItem value="all">All Statuses</MenuItem>
+          <MenuItem value="approved">Approved</MenuItem>
+          <MenuItem value="pending">Pending</MenuItem>
+          <MenuItem value="cancelled">Cancelled</MenuItem>
+        </Select>
+      </Paper>
+      <Paper>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
+            <TableRow>
+              <TableCell>Customer</TableCell>
+              <TableCell>Date & Time</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Guests</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredBookings.length > 0 ? (
+              filteredBookings.map((booking) => (
+                <TableRow key={booking._id} hover>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Avatar sx={{ bgcolor: "teal", mr: 2 }}>
+                        {booking.name.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography fontWeight={500}>{booking.name}</Typography>
+                        <Typography variant="caption">
+                          ID: {booking._id.slice(-6)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {formatDate(booking.bookingDate)}
+                    </Typography>
+                    <Typography variant="caption">
+                      {booking.startTime} - {booking.endTime}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{booking.type}</TableCell>
+                  <TableCell>{booking.totalGuest}</TableCell>
+                  <TableCell>
+                    <Box
+                      px={1}
+                      py={0.5}
+                      borderRadius={2}
+                      bgcolor={getStatusColor(booking.status)}
+                      display="inline-block"
                     >
-                      {booking.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <button
+                      <Typography variant="caption" fontWeight="bold">
+                        {booking.status.charAt(0).toUpperCase() +
+                          booking.status.slice(1)}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
                       onClick={() => handleDelete(booking._id)}
-                      className="px-3 py-1 text-xs font-semibold rounded bg-red-500 text-white hover:bg-red-600 transition duration-200"
+                      size="small"
+                      color="error"
                     >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                      <DeleteIcon fontSize="small" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No bookings found matching your criteria
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Paper>
+    </Box>
   );
 };
 

@@ -234,9 +234,9 @@ const Get_Booking = () => {
                     >
                       <EditIcon fontSize="small" />
                     </Button>
-                    <Button size="small" color="error">
+                    {/* <Button size="small" color="error">
                       <DeleteIcon fontSize="small" />
-                    </Button>
+                    </Button> */}
                   </TableCell>
                 </TableRow>
               ))
