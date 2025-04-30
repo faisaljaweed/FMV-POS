@@ -173,7 +173,7 @@ const Get_Booking = () => {
         </Select>
       </Paper>
 
-      <Paper>
+      <Paper className="shadow-md rounded-lg overflow-x-auto">
         <Table>
           <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
             <TableRow>

@@ -143,7 +143,7 @@ const Get_Booking = () => {
           <MenuItem value="cancelled">Cancelled</MenuItem>
         </Select>
       </Paper>
-      <Paper>
+      <Paper className="shadow-md rounded-lg overflow-x-auto">
         <Table>
           <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
             <TableRow>

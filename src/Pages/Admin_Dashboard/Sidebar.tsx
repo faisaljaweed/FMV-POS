@@ -37,10 +37,12 @@ const Sidebar: React.FC = () => {
   const { sidebarOpen, closeSidebar } = useDashboard();
   return (
     <motion.aside
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-teal-800 to-teal-900 text-white shadow-xl transform transition-transform duration-300 ease-in-out 
-    ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-teal-800 to-teal-900 text-white shadow-xl transform lg:translate-x-0 lg:static lg:inset-auto lg:z-auto transition-transform duration-300 ease-in-out 
+          ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }
+    `}
       initial={false}
-      animate={sidebarOpen ? "open" : "closed"}
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between px-4 py-5 border-b border-teal-700">

@@ -62,7 +62,7 @@ const Get_Vendor = () => {
           className="w-full p-2 outline-none"
         />
       </div>
-      <Paper>
+      <Paper className="shadow-md rounded-lg overflow-x-auto">
         <Table>
           <TableHead sx={{ backgroundColor: "#F9FAFB" }}>
             <TableRow>
