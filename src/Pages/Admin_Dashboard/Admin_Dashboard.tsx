@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useDashboard } from "../../context/DashboardContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
@@ -9,8 +9,13 @@ const AdminDashboard = () => {
   const location = useLocation();
 
   //   // Close sidebar on route change (mobile)
+
+  const prevPathnameRef = useRef(location.pathname);
   useEffect(() => {
-    closeSidebar();
+    if (location.pathname !== prevPathnameRef.current) {
+      closeSidebar();
+      prevPathnameRef.current = location.pathname;
+    }
   }, [location.pathname, closeSidebar]);
 
   return (

@@ -24,9 +24,10 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
+    console.log("Before toggle:", sidebarOpen);
     setSidebarOpen((prev) => !prev);
+    console.log("After toggle:", !sidebarOpen);
   };
-
   const closeSidebar = () => {
     setSidebarOpen(false);
   };

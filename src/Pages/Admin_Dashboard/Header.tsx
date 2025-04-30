@@ -8,7 +8,6 @@ import { Bell, LogOut, Menu, User } from "lucide-react";
 
 const Header: React.FC = () => {
   const { toggleSidebar } = useDashboard();
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -68,7 +67,6 @@ const Header: React.FC = () => {
 
             {/* Logout button */}
             <button
-              // onClick={handleLogout}
               onClick={handleLogout}
               className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500 transition-colors duration-200"
             >
